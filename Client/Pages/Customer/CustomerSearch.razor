@@ -1,0 +1,124 @@
+﻿@page "/customer/query"
+@using MemberShipManage.Shared.CustomerDTO
+@using MemberShipManage.Infrastructurer
+@using MemberShipManage.Infrastructurer.Extension
+@using MemberShipManage.Client.Pages.Pager
+@inject HttpClient Http
+
+<EditForm Model="@request">
+    <div id="customer" class="margin-t10">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <label>会员管理</label>
+                </h3>
+            </div>
+            <div class="panel-content padding-5">
+                <div class="row">
+                    <label class="col-md-1">用户名：</label>
+                    <div class="col-md-3">
+                        <InputText type="text" id="userno" @bind-Value="request.UserNo" class="form-control" maxlength="20" autocomplete="off" />
+                    </div>
+                    <label class="col-md-1">姓名：</label>
+                    <div class="col-md-2">
+                        <InputText type="text" id="name" @bind-Value="request.Name" class="form-control" maxlength="20" autocomplete="off" />
+                    </div>
+                    <label class="col-md-1">性别：</label>
+                    <div class="col-md-2">
+                        <InputSelect class="form-control" id="sex" @bind-Value="request.Sex">
+                            <option value="">---全部---</option>
+                            <option value="1">男</option>
+                            <option value="0">女</option>
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-1">
+                        <button id="search" type="button" @onclick="(()=> SearchCustomerList())" class="btn btn-primary">查询</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="customerlist" class="margin-t10">
+                            @*<CustomerList Request="Request" CustomerPagedList="CustomerPagedList"></CustomerList>*@
+                            <table id="cutomerlist" class="table table-striped table-bordered table-condensed">
+                                <tr style="background-color:#eee;height:35px;">
+                                    <th>用户名</th>
+                                    <th>姓名</th>
+                                    <th>性别</th>
+                                    <th>余额</th>
+                                    <th>返利</th>
+                                    <th>推荐人</th>
+                                    <th>注册日期</th>
+                                    <th>操作</th>
+                                </tr>
+                                @if (CustomerGetResponse != null && CustomerGetResponse.CustomerDetailList?.Count > 0)
+                                {
+                                    foreach (var customer in CustomerGetResponse.CustomerDetailList)
+                                    {
+                                        <tr>
+                                            <td style="width:180px">@customer.UserNo</td>
+                                            <td style="width:120px">@customer.Name</td>
+                                            <td style="width:80px">@(customer.Sex == 1 ? "男" : "女")</td>
+                                            <td style="width:150px;color:blue">
+                                                @(customer.Amount)
+                                            </td>
+                                            <td style="width:80px;color:green">@(customer.RebateAmount.GetValueOrDefault(0))</td>
+                                            <td style="width:80px">@(customer.ParentCustomerName ?? "N/A")</td>
+                                            <td style="width:150px">
+                                                @customer.InDate.GetValueOrDefault(DateTime.Now).ToString("yyyy-MM-dd HH:mm")
+                                            </td>
+                                            <td style="width:200px">
+                                                <button type="button" class="btn btn-success" onclick="showRechargeModal(@customer.Id,'@customer.UserNo','@customer.Name')">充值</button>&nbsp;
+                                                <button type="button" class="btn btn-primary" onclick="showUpdateModal(@customer.Id,'@customer.UserNo','@customer.Name','@customer.Sex','@customer.ParentId','@customer.ParentCustomerName')">编辑</button>&nbsp;
+                                                <button type="button" class="btn btn-danger" onclick="deleteCustomer(@customer.Id)">删除</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                            <CustomPager Result=@pagerResult PagerChanged="PagerPageChanged" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+@code {
+    private EditContext editContext;
+    private PagerResultBase pagerResult = new PagerResult<CustomerDetailEntity>();
+    private CustomerGetRequest request = new CustomerGetRequest();
+    public CustomerGetResponse CustomerGetResponse { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(request);
+        await SearchCustomerList();
+    }
+
+    private async Task SearchCustomerList(int? pageIndex = 0)
+    {
+        var url = APIUrlDefination.CUSTOMER_GET + "?";
+        var criteria = string.Empty;
+        EnsureCondition.RunIf(!string.IsNullOrEmpty(request.UserNo), () => criteria = string.Concat(criteria, $"&userno={request.UserNo.Trim()}"));
+        EnsureCondition.RunIf(!string.IsNullOrEmpty(request.Name), () => criteria = string.Concat(criteria, $"&userno={request.Name.Trim()}"));
+        EnsureCondition.RunIf(request.Sex.HasValue, () => criteria = string.Concat(criteria, $"&sex={request.Sex}"));
+        criteria = string.Concat(criteria, $"&pageindex={pageIndex}&pagesize={request.PageSize}");
+        criteria = criteria.TrimStart('&');
+        url = string.Concat(url, criteria);
+
+        CustomerGetResponse = await Http.GetFromJsonAsync<CustomerGetResponse>(url);
+        pagerResult = new PagerResult<CustomerDetailEntity>
+        {
+            CurrentPage = pageIndex.Value,
+            PageCount = CustomerGetResponse.TotalPages,
+            PageSize = request.PageSize,
+            Results = CustomerGetResponse.CustomerDetailList
+        };
+    }
+
+    private async void PagerPageChanged(int pageIndex)
+    {
+        await SearchCustomerList(pageIndex);
+        StateHasChanged();
+    }
+}

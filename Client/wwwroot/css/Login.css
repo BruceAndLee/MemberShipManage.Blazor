@@ -1,0 +1,42 @@
+﻿#main_layout {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -160px 0 0 -200px;
+    width: 400px;
+    height: 320px;
+}
+
+body {
+    background-image: url("Images/bg.png");
+    font-family: 微软雅黑;
+}
+
+.bg_user {
+    background: #428bca;
+}
+
+.bg_pwd {
+    background: #428bca;
+}
+/**/
+.col-md-margin {
+    margin: 20px 20px 0px 10px;
+    padding-right: 40px;
+}
+
+img {
+    width: 20px;
+    height: 20px;
+}
+
+button {
+    width: 70px;
+}
+
+#imgcode {
+    width: 85px;
+    height: 33px;
+    border-radius: 10%;
+    cursor: pointer;
+}

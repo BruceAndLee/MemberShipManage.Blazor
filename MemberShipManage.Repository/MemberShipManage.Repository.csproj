@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MemberShipManage.Domain\MemberShipManage.Domain.csproj" />
+    <ProjectReference Include="..\MemberShipManage.Infrastructure\MemberShipManage.Infrastructure.csproj" />
+    <ProjectReference Include="..\Shared\MemberShipManage.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

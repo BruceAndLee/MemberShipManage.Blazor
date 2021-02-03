@@ -1,0 +1,117 @@
+﻿@page "/customer/list"
+@using MemberShipManage.Shared.CustomerDTO
+@using MemberShipManage.Infrastructurer
+@using MemberShipManage.Infrastructurer.Extension
+@using MemberShipManage.Client.Pages.Pager
+@inject HttpClient Http
+
+<EditForm Model="@request">
+    <div id="customer" class="margin-t10">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <label>会员管理</label>
+                </h3>
+            </div>
+            <div class="panel-content padding-5">
+                <div class="row">
+                    <label class="col-md-1">用户名：</label>
+                    <div class="col-md-3">
+                        <InputText type="text" id="userno" @bind-Value="request.UserNo" class="form-control" maxlength="20" autocomplete="off" />
+                    </div>
+                    <label class="col-md-1">姓名：</label>
+                    <div class="col-md-2">
+                        <InputText type="text" id="name" @bind-Value="request.Name" class="form-control" maxlength="20" autocomplete="off" />
+                    </div>
+                    <label class="col-md-1">性别：</label>
+                    <div class="col-md-2">
+                        <InputSelect class="form-control" id="sex" @bind-Value="request.Sex">
+                            <option value="">---全部---</option>
+                            <option value="1">男</option>
+                            <option value="0">女</option>
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-1">
+                        <button id="search" type="button" @onclick="(() => SearchCustomerList())" class="btn btn-primary">查询</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="customerlist" class="margin-t10">
+                            <Table TItem="CustomerDetailEntity"
+                                   IsPagination="true"
+                                   PageItemsSource="@PageItemsSource"
+                                   IsStriped="true"
+                                   IsBordered="true"
+                                   ShowToolbar="true"
+                                   ShowLineNo="true"
+                                   LineNoText="序号"
+                                   DoubleClickToEdit="true"
+                                   Items="CustomerDetailList">
+                                <TableColumns Context="customer">
+                                    <TableColumn @bind-Field="@customer.UserNo" Text="用户名" Width="180" />
+                                    <TableColumn @bind-Field="@customer.Name" Text="姓名" Width="120" />
+                                    <TableColumn @bind-Field="@customer.Sex" Text="性别" Width="80" />
+                                    <TableColumn @bind-Field="@customer.RebateAmount" Text="余额" Width="150" />
+                                    <TableColumn @bind-Field="@customer.ParentCustomerName" Text="推荐人" Width="80" />
+                                    <TableColumn @bind-Field="@customer.InDate" Text="注册日期" Width="150">
+                                        <Template Context="value">
+                                            <span>@value.Value.GetValueOrDefault(DateTime.Now).ToString("yyyy-MM-dd hh:mm:ss")</span>
+                                        </Template>
+                                    </TableColumn>
+                                </TableColumns>
+                                <EditTemplate Context="edit">
+                                    <div class="form-inline">
+                                        <div class="row">
+                                            <div class="form-group col-12 col-sm-6">
+                                                <BootstrapInput @bind-Value="@edit.Name" placeholder="不可为空，50字以内" maxlength="50">
+                                                    <RequiredValidator />
+                                                    <StringLengthValidator Length="50" />
+                                                </BootstrapInput>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </EditTemplate>
+                            </Table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+@code {
+    private EditContext editContext;
+    private PagerResultBase pagerResult = new PagerResult<CustomerDetailEntity>();
+    private CustomerGetRequest request = new CustomerGetRequest();
+    private CustomerGetResponse CustomerGetResponse { get; set; }
+    protected static IEnumerable<int> PageItemsSource => new int[] { 2, 4, 10, 20 };
+    public List<CustomerDetailEntity> CustomerDetailList = new List<CustomerDetailEntity>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(request);
+        await SearchCustomerList();
+    }
+
+    private async Task SearchCustomerList(int? pageIndex = 0)
+    {
+        var url = APIUrlDefination.CUSTOMER_GET + "?";
+        var criteria = string.Empty;
+        EnsureCondition.RunIf(!string.IsNullOrEmpty(request.UserNo), () => criteria = string.Concat(criteria, $"&userno={request.UserNo.Trim()}"));
+        EnsureCondition.RunIf(!string.IsNullOrEmpty(request.Name), () => criteria = string.Concat(criteria, $"&userno={request.Name.Trim()}"));
+        EnsureCondition.RunIf(request.Sex.HasValue, () => criteria = string.Concat(criteria, $"&sex={request.Sex}"));
+        criteria = string.Concat(criteria, $"&pageindex={pageIndex}&pagesize={request.PageSize}");
+        criteria = criteria.TrimStart('&');
+        url = string.Concat(url, criteria);
+
+        var response = await Http.GetFromJsonAsync<CustomerGetResponse>(url);
+        CustomerDetailList = response.CustomerDetailList;
+    }
+
+    private async void PagerPageChanged(int pageIndex)
+    {
+        await SearchCustomerList(pageIndex);
+        StateHasChanged();
+    }
+}

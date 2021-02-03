@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Scripts>
+  <Script Key="GetCustomerList">
+    <![CDATA[
+DECLARE @CustomerTable TABLE
+(
+	TransactionNumber INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	ID INT NOT NULL
+)
+
+INSERT INTO @CustomerTable
+(
+	ID
+)
+SELECT A.ID
+FROM MembershipManage.dbo.Customer A WITH(NOLOCK)
+WHERE (@UserNo = '' OR A.UserNo LIKE '%'+ @UserNo +'%')
+	AND (@Name = '' OR A.Name LIKE '%'+ @Name +'%')
+	AND (@Sex IS NULL OR A.Sex = @Sex)
+  AND Status = 1
+ORDER BY A.InDate DESC
+
+SELECT @TotalCount = @@ROWCOUNT
+
+;WITH CTE AS(
+	SELECT ID
+	FROM @CustomerTable
+	WHERE TransactionNumber > @PageIndex * @PageSize 
+		AND TransactionNumber <= (@PageIndex + 1) * @PageSize
+)
+
+SELECT A.ID
+  ,B.UserNo
+  ,B.Sex
+  ,B.InDate
+  ,B.InUser
+  ,B.Name
+  ,ISNULL(C.Amount,0) AS Amount
+  ,B.ParentID AS ParentCustomerID
+  ,R.Amount AS RebateAmount
+  ,D.Name AS ParentCustomerName
+  ,B.InDate
+  ,B.InUser
+FROM CTE A
+INNER JOIN MembershipManage.dbo.Customer B WITH(NOLOCK)
+	ON A.ID = B.ID
+LEFT JOIN MembershipManage.dbo.CustomerAmount C WITH(NOLOCK)
+	ON A.ID = C.CustomerID
+LEFT JOIN MembershipManage.dbo.Customer D WITH(NOLOCK)
+	ON D.ID = B.ParentID
+LEFT JOIN
+(
+	SELECT SUM(Amount) AS Amount,CustomerID
+	FROM MembershipManage.dbo.CustomerRebate
+	GROUP BY CustomerID
+) R ON R.CustomerID = A.ID
+    ]]>
+  </Script>
+</Scripts>

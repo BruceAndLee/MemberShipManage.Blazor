@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Client\MemberShipManage.Client.csproj" />
+    <ProjectReference Include="..\MemberShipManage.Validations\MemberShipManage.Validations.csproj" />
+    <ProjectReference Include="..\MemberShipManager.Service\MemberShipManage.Service.csproj" />
+    <ProjectReference Include="..\Shared\MemberShipManage.Shared.csproj" />
+  </ItemGroup>
+
+
+</Project>

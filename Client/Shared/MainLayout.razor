@@ -1,0 +1,50 @@
+﻿@inherits LayoutComponentBase
+
+<div>
+    <header>
+        <div class="col-md-12">
+            <div class="col-md-5 website-title" style="text-align: left">
+                <img src="images/member.png" width="50" height="50" />
+                <a href="/" style="color:white">渔人杰餐厅会员管理系统</a>
+            </div>
+            <div id="logout" class="col-md-7" style="text-align: right; font-size: large">
+
+                <img id="img_UserPhoto" class="round-image" src="images/users.jpg" />
+                <span style="margin-right: 10px">
+                    当前用户：李磊
+                </span>
+                <span id="currentTime">@dateNow.ToString("yyyy-MM-dd HH:mm:ss")</span>&nbsp;&nbsp;
+                <a href="">注销</a>
+            </div>
+        </div>
+    </header>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <NavMenu />
+    </div>
+    <div class="col-md-10">
+        @Body
+    </div>
+</div>
+
+@code {
+    private DateTime dateNow = DateTime.Now;
+
+
+    protected override void OnInitialized()
+    {
+        var timer = new System.Threading.Timer((_) =>
+        {
+            dateNow = DateTime.Now;
+            InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }, null, 0, 1000);
+        base.OnInitialized();
+    }
+
+}
+
+
