@@ -2,7 +2,6 @@
 @using MemberShipManage.Shared.CustomerDTO
 @using MemberShipManage.Infrastructurer
 @using MemberShipManage.Infrastructurer.Extension
-@using MemberShipManage.Client.Pages.Pager
 @inject HttpClient Http
 
 <EditForm Model="@request">
@@ -32,7 +31,7 @@
                         </InputSelect>
                     </div>
                     <div class="col-md-1">
-                        <button id="search" type="button" @onclick="(() => SearchCustomerList())" class="btn btn-primary">查询</button>
+                        <button id="search" type="button" @onclick="(() => SearchCustomerList(new QueryPageOptions { PageIndex=0 }))" class="btn btn-primary">查询</button>
                     </div>
                 </div>
                 <div class="row">
@@ -47,9 +46,14 @@
                                    ShowLineNo="true"
                                    LineNoText="序号"
                                    DoubleClickToEdit="true"
-                                   Items="CustomerDetailList">
+                                   ShowEditButton="false"
+                                   IsMultipleSelect="true"
+                                   @bind-SelectedRows="@SelectedRows"
+                                   ShowDefaultButtons="true"
+                                   ShowExportButton="true"
+                                   OnQueryAsync="OnQueryAsync">
                                 <TableColumns Context="customer">
-                                    <TableColumn @bind-Field="@customer.UserNo" Text="用户名" Width="180" />
+                                    <TableColumn @bind-Field="@customer.UserNo" Text="用户名" Width="180" Sortable="true" Filterable="true" />
                                     <TableColumn @bind-Field="@customer.Name" Text="姓名" Width="120" />
                                     <TableColumn @bind-Field="@customer.Sex" Text="性别" Width="80" />
                                     <TableColumn @bind-Field="@customer.RebateAmount" Text="余额" Width="150" />
@@ -82,36 +86,44 @@
 </EditForm>
 @code {
     private EditContext editContext;
-    private PagerResultBase pagerResult = new PagerResult<CustomerDetailEntity>();
     private CustomerGetRequest request = new CustomerGetRequest();
     private CustomerGetResponse CustomerGetResponse { get; set; }
-    protected static IEnumerable<int> PageItemsSource => new int[] { 2, 4, 10, 20 };
-    public List<CustomerDetailEntity> CustomerDetailList = new List<CustomerDetailEntity>();
+    protected static IEnumerable<int> PageItemsSource => new int[] { 10, 20, 50, 100 };
+    private IEnumerable<CustomerDetailEntity> SelectedRows = new List<CustomerDetailEntity>();
 
-    protected override async Task OnInitializedAsync()
+    protected async Task<QueryData<CustomerDetailEntity>> OnQueryAsync(QueryPageOptions options)
     {
-        editContext = new EditContext(request);
-        await SearchCustomerList();
+        await SearchCustomerList(options);
+        return Task.FromResult(new QueryData<CustomerDetailEntity>()
+        {
+            Items = CustomerGetResponse.CustomerDetailList,
+            TotalCount = CustomerGetResponse.TotalCount
+        }).Result;
     }
 
-    private async Task SearchCustomerList(int? pageIndex = 0)
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(request);
+    }
+
+    private async Task SearchCustomerList(QueryPageOptions options)
+    {
+        var url = BuildRequestUrl(options).Result;
+        CustomerGetResponse = await Http.GetFromJsonAsync<CustomerGetResponse>(url);
+    }
+
+    private async Task<string> BuildRequestUrl(QueryPageOptions options)
     {
         var url = APIUrlDefination.CUSTOMER_GET + "?";
         var criteria = string.Empty;
         EnsureCondition.RunIf(!string.IsNullOrEmpty(request.UserNo), () => criteria = string.Concat(criteria, $"&userno={request.UserNo.Trim()}"));
         EnsureCondition.RunIf(!string.IsNullOrEmpty(request.Name), () => criteria = string.Concat(criteria, $"&userno={request.Name.Trim()}"));
         EnsureCondition.RunIf(request.Sex.HasValue, () => criteria = string.Concat(criteria, $"&sex={request.Sex}"));
-        criteria = string.Concat(criteria, $"&pageindex={pageIndex}&pagesize={request.PageSize}");
+        criteria = string.Concat(criteria, $"&pageindex={options.PageIndex}&pagesize={options.PageItems}");
         criteria = criteria.TrimStart('&');
         url = string.Concat(url, criteria);
 
-        var response = await Http.GetFromJsonAsync<CustomerGetResponse>(url);
-        CustomerDetailList = response.CustomerDetailList;
+        return await Task.FromResult(url);
     }
 
-    private async void PagerPageChanged(int pageIndex)
-    {
-        await SearchCustomerList(pageIndex);
-        StateHasChanged();
-    }
 }
