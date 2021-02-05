@@ -2,7 +2,6 @@
 @using MemberShipManage.Shared.CustomerDTO
 @using MemberShipManage.Infrastructurer
 @using MemberShipManage.Infrastructurer.Extension
-@using MemberShipManage.Client.Pages.Pager
 @inject HttpClient Http
 
 <EditForm Model="@request">
@@ -32,15 +31,14 @@
                         </InputSelect>
                     </div>
                     <div class="col-md-1">
-                        <button id="search" type="button" @onclick="(() => SearchCustomerList(0))" class="btn btn-primary">查询</button>
+                        <button id="search" type="button" @onclick="(() => SearchCustomerList(new QueryPageOptions { PageIndex=0 }))" class="btn btn-primary">查询</button>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
                         <div id="customerlist" class="margin-t10">
                             <Table TItem="CustomerDetailEntity"
-                                   IsPagination="false"
-                                   Items="CustomerGetResponse?.CustomerDetailList"
+                                   IsPagination="true"
                                    PageItemsSource="@PageItemsSource"
                                    IsStriped="true"
                                    IsBordered="true"
@@ -52,18 +50,20 @@
                                    IsMultipleSelect="true"
                                    @bind-SelectedRows="@SelectedRows"
                                    ShowDefaultButtons="true"
-                                   ShowExportButton="true">
+                                   ShowExportButton="true"
+                                   ShowExtendButtons="true" ShowSkeleton="true"
+                                   OnQueryAsync="OnQueryAsync">
                                 <TableColumns Context="customer">
                                     <TableColumn @bind-Field="@customer.UserNo" Text="用户名" Width="180" Sortable="true" Filterable="true" />
                                     <TableColumn @bind-Field="@customer.Name" Text="姓名" Width="120" />
                                     <TableColumn @bind-Field="@customer.Sex" Text="性别" Width="80" />
                                     <TableColumn @bind-Field="@customer.Amount" Text="余额" Width="150" />
                                     <TableColumn @bind-Field="@customer.ParentCustomerName" Text="推荐人" Width="80" />
-                                    <TableColumn @bind-Field="@customer.InDate" Text="注册日期" Width="150">
+                                    @*<TableColumn @bind-Field="@customer.InDate" Text="注册日期" Width="150">
                                         <Template Context="value">
                                             <span>@value.Value.GetValueOrDefault(DateTime.Now).ToString("yyyy-MM-dd hh:mm:ss")</span>
                                         </Template>
-                                    </TableColumn>
+                                    </TableColumn>*@
                                 </TableColumns>
                                 <EditTemplate Context="edit">
                                     <div class="form-inline">
@@ -78,7 +78,6 @@
                                     </div>
                                 </EditTemplate>
                             </Table>
-                            <CustomPager Result=@pagerResult PagerChanged="PagerPageChanged" />
                         </div>
                     </div>
                 </div>
@@ -86,50 +85,45 @@
         </div>
     </div>
 </EditForm>
-@code {
+@code { 
     private EditContext editContext;
-    private PagerResultBase pagerResult = new PagerResult<CustomerDetailEntity>();
     private CustomerGetRequest request = new CustomerGetRequest();
-    private CustomerGetResponse CustomerGetResponse = new CustomerGetResponse();
+    private CustomerGetResponse CustomerGetResponse { get; set; }
     protected static IEnumerable<int> PageItemsSource => new int[] { 10, 20, 50, 100 };
     private IEnumerable<CustomerDetailEntity> SelectedRows = new List<CustomerDetailEntity>();
 
-    protected async override void OnInitialized()
+    protected async Task<QueryData<CustomerDetailEntity>> OnQueryAsync(QueryPageOptions options)
+    {
+        await SearchCustomerList(options);
+        return Task.FromResult(new QueryData<CustomerDetailEntity>()
+        {
+            Items = CustomerGetResponse.CustomerDetailList,
+            TotalCount = CustomerGetResponse.TotalCount
+        }).Result;
+    }
+
+    protected override void OnInitialized()
     {
         editContext = new EditContext(request);
-        await SearchCustomerList();
     }
 
-    private async Task SearchCustomerList(int pageIndex = 0)
+    private async Task SearchCustomerList(QueryPageOptions options)
     {
-        var url = BuildRequestUrl(pageIndex).Result;
+        var url = BuildRequestUrl(options).Result;
         CustomerGetResponse = await Http.GetFromJsonAsync<CustomerGetResponse>(url);
-        pagerResult = new PagerResult<CustomerDetailEntity>
-        {
-            CurrentPage = pageIndex,
-            PageCount = CustomerGetResponse.TotalPages,
-            PageSize = request.PageSize,
-            Results = CustomerGetResponse.CustomerDetailList
-        };
     }
 
-    private async Task<string> BuildRequestUrl(int pageIndex)
+    private async Task<string> BuildRequestUrl(QueryPageOptions options)
     {
         var url = APIUrlDefination.CUSTOMER_GET + "?";
         var criteria = string.Empty;
         EnsureCondition.RunIf(!string.IsNullOrEmpty(request.UserNo), () => criteria = string.Concat(criteria, $"&userno={request.UserNo.Trim()}"));
         EnsureCondition.RunIf(!string.IsNullOrEmpty(request.Name), () => criteria = string.Concat(criteria, $"&userno={request.Name.Trim()}"));
         EnsureCondition.RunIf(request.Sex.HasValue, () => criteria = string.Concat(criteria, $"&sex={request.Sex}"));
-        criteria = string.Concat(criteria, $"&pageindex={pageIndex}&pagesize={request.PageSize}");
+        criteria = string.Concat(criteria, $"&pageindex={options.PageIndex}&pagesize={options.PageItems}");
         criteria = criteria.TrimStart('&');
         url = string.Concat(url, criteria);
 
         return await Task.FromResult(url);
-    }
-
-    private async void PagerPageChanged(int pageIndex)
-    {
-        await SearchCustomerList(pageIndex);
-        StateHasChanged();
-    }
+    } 
 }
