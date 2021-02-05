@@ -3,133 +3,103 @@
 @using MemberShipManage.Infrastructurer
 @using MemberShipManage.Infrastructurer.Extension
 @inject HttpClient Http
+@inject ToastService ToastService
 
-<EditForm Model="@request">
-    <div id="customer" class="margin-t10">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">
-                    <label>会员管理</label>
-                </h3>
-            </div>
-            <div class="panel-content padding-5">
-                <div class="row">
-                    <label class="col-md-1">用户名：</label>
-                    <div class="col-md-3">
-                        <InputText type="text" id="userno" @bind-Value="request.UserNo" class="form-control" maxlength="20" autocomplete="off" />
-                    </div>
-                    <label class="col-md-1">姓名：</label>
-                    <div class="col-md-2">
-                        <InputText type="text" id="name" @bind-Value="request.Name" class="form-control" maxlength="20" autocomplete="off" />
-                    </div>
-                    <label class="col-md-1">性别：</label>
-                    <div class="col-md-2">
-                        <InputSelect class="form-control" id="sex" @bind-Value="request.Sex">
-                            <option value="">---全部---</option>
-                            <option value="1">男</option>
-                            <option value="0">女</option>
-                        </InputSelect>
-                    </div>
-                    <div class="col-md-1">
-                        <button id="search" type="button" @onclick="(() => SearchCustomerList(new QueryPageOptions { PageIndex=0 }))" class="btn btn-primary">查询</button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div id="customerlist" class="margin-t10">
-                            <Table TItem="CustomerDetailEntity"
-                                   IsPagination="true"
-                                   PageItemsSource="@PageItemsSource"
-                                   IsStriped="true"
-                                   IsBordered="true"
-                                   ShowToolbar="true"
-                                   ShowLineNo="true"
-                                   LineNoText="序号"
-                                   DoubleClickToEdit="true"
-                                   ShowEditButton="false"
-                                   IsMultipleSelect="true"
-                                   @bind-SelectedRows="@SelectedRows"
-                                   
-                                   ShowExportButton="true"
-                                
-                                   ShowSearch="true" ShowAdvancedSearch="true"
-                                   ShowDefaultButtons="true"
-                                   AddModalTitle="增加测试数据窗口"
-                                   EditModalTitle="编辑测试数据窗口"
-                                   OnQueryAsync="OnQueryAsync"
-                                   OnAddAsync="@OnAddAsync"
-                                   OnSaveAsync="@OnSaveAsync">
-                                <TableColumns Context="customer">
-                                    <TableColumn @bind-Field="@customer.UserNo" Text="用户名" Width="180" Sortable="true" Filterable="true" />
-                                    <TableColumn @bind-Field="@customer.Name" Text="姓名" Width="120" />
-                                    <TableColumn @bind-Field="@customer.Sex" Text="性别" Width="80" />
-                                    <TableColumn @bind-Field="@customer.Amount" Text="余额" Width="150" />
-                                    <TableColumn @bind-Field="@customer.ParentCustomerName" Text="推荐人" Width="80" />
-                                    <TableColumn @bind-Field="@customer.InDate" Text="注册日期" Width="150">
-                                        <Template Context="value">
-                                            <span>@value.Value.GetValueOrDefault(DateTime.Now).ToString("yyyy-MM-dd hh:mm:ss")</span>
-                                        </Template>
-                                    </TableColumn>
-                                </TableColumns>
-                                <EditTemplate Context="edit">
-                                    <div class="form-inline">
-                                        <div class="row">
-                                            <div class="form-group col-12 col-sm-6">
-                                                <BootstrapInput @bind-Value="@edit.Name" placeholder="不可为空，50字以内" maxlength="50">
-                                                    <RequiredValidator />
-                                                    <StringLengthValidator Length="50" />
-                                                </BootstrapInput>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </EditTemplate>
-                                <SearchTemplate Context="search">
-                                    <div class="form-inline">
-                                        <div class="row">
-                                            <div class="form-group col-12 col-sm-6">
-                                                <BootstrapInput @bind-Value="@search.Name" placeholder="不可为空，50字以内" maxlength="50" ShowLabel="true" DisplayText="姓名" />
-                                            </div>
-                                            <div class="form-group col-12 col-sm-6">
-                                                <BootstrapInput @bind-Value="@search.UserNo" placeholder="不可为空，50字以内" maxlength="50" ShowLabel="true" DisplayText="地址" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </SearchTemplate>
-                            </Table>
+<div class="row">
+    <div class="col-md-12">
+        <div id="customerlist">
+            <GroupBox Title="查询">
+                <div class="form-inline">
+                    <div class="row">
+                        <div class="form-group col-3">
+                            <label class="control-label">用户名：</label>
+                            <BootstrapInput TValue="string" @bind-Value="request.UserNo" placeholder=""></BootstrapInput>
+                        </div>
+                        <div class="form-group col-3">
+                            <label class="control-label">姓名：</label>
+                            <BootstrapInput TValue="string" @bind-Value="request.Name" placeholder=""></BootstrapInput>
+                        </div>
+                        <div class="form-group col-3">
+                            <label class="control-label">性别：</label>
+                            <Select @bind-Value="@request.Sex">
+                                <Options>
+                                    <SelectOption Text="---全部---" Value="" />
+                                    <SelectOption Text="男" Value="1" />
+                                    <SelectOption Text="女" Value="2" />
+                                </Options>
+                            </Select>
+                        </div>
+                        <div class="form-group col-3">
+                            <Button Color="Color.Primary" @onclick="()=> SearchCustomerList(new QueryPageOptions {PageIndex=0,PageItems=PageItemCount })">查询</Button>
                         </div>
                     </div>
                 </div>
+            </GroupBox>
+            <div class="margin-t5">
+                <Table TItem="CustomerDetailEntity"
+                       IsPagination="false"
+                       Items="CustomerGetResponse.CustomerDetailList"
+                       IsStriped="true"
+                       IsBordered="true"
+                       ShowToolbar="true"
+                       ShowLineNo="true"
+                       LineNoText="序号"
+                       ShowDefaultButtons="false"
+                       ShowRefresh="false"
+                       IsMultipleSelect="true"
+                       @bind-SelectedRows="@SelectedRows"
+                       ShowExportButton="true">
+                    <TableToolbarTemplate>
+                        <TableToolbarButton TItem="CustomerDetailEntity" Color="Color.Primary" Icon="fa fa-fw fa-edit" Text="新增" OnClickCallback="@CustomerButton" />
+                        <TableToolbarButton TItem="CustomerDetailEntity" Color="Color.Danger" Icon="fa fa-fw fa-edit" Text="删除" OnClickCallback="@CustomerButton" />
+                    </TableToolbarTemplate>
+                    <TableColumns Context="customer">
+                        <TableColumn @bind-Field="@customer.UserNo" Text="用户名" Width="180" Sortable="true" Filterable="true" />
+                        <TableColumn @bind-Field="@customer.Name" Text="姓名" Width="120" />
+                        <TableColumn @bind-Field="@customer.Sex" Text="性别" Width="80" />
+                        <TableColumn @bind-Field="@customer.Amount" Text="余额" Width="150" />
+                        <TableColumn @bind-Field="@customer.ParentCustomerName" Text="推荐人" Width="80" />
+                        <TableColumn @bind-Field="@customer.InDate" Text="注册日期" Width="150">
+                            <Template Context="value">
+                                <span>@value.Value.GetValueOrDefault(DateTime.Now).ToString("yyyy-MM-dd hh:mm:ss")</span>
+                            </Template>
+                        </TableColumn>
+                    </TableColumns>
+                    <RowButtonTemplate>
+                        <TableCellButton Size="Size.ExtraSmall" Color="Color.Success" TItem="CustomerDetailEntity" Item="@context" Icon="fa fa-edit" Text="编辑" OnClickCallback="@OnRowButtonClick" />
+                    </RowButtonTemplate>
+                </Table>
+                <Pagination PageItems="@PageItemCount"
+                            PageItemsSource="@PageItems"
+                            TotalCount="@CustomerGetResponse.TotalCount"
+                            OnPageClick="@OnPageClick"
+                            OnPageItemsChanged="@OnPageItemsChanged">
+                </Pagination>
             </div>
         </div>
     </div>
-</EditForm>
-@code {
-    private EditContext editContext;
+</div>
+<Toast @ref="Toast" Placement="Placement.Top"></Toast>
+@code { private EditContext editContext;
     private CustomerGetRequest request = new CustomerGetRequest();
-    private CustomerGetResponse CustomerGetResponse { get; set; }
-    protected static IEnumerable<int> PageItemsSource => new int[] { 10, 20, 50, 100 };
+    private CustomerGetResponse CustomerGetResponse = new CustomerGetResponse { CustomerDetailList = new List<CustomerDetailEntity>() };
     private IEnumerable<CustomerDetailEntity> SelectedRows = new List<CustomerDetailEntity>();
+    private IEnumerable<int> PageItems => new int[] { 10, 20, 50, 100 };
+    private int PageItemCount { get; set; }
 
-    protected async Task<QueryData<CustomerDetailEntity>> OnQueryAsync(QueryPageOptions options)
-    {
-        await SearchCustomerList(options);
-        return Task.FromResult(new QueryData<CustomerDetailEntity>()
-        {
-            Items = CustomerGetResponse.CustomerDetailList,
-            TotalCount = CustomerGetResponse.TotalCount
-        }).Result;
-    }
-
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         base.OnInitialized();
+        PageItemCount = PageItems.First();
         editContext = new EditContext(request);
+        await this.SearchCustomerList(new QueryPageOptions { PageIndex = 0, PageItems = PageItemCount });
     }
 
     private async Task SearchCustomerList(QueryPageOptions options)
     {
         var url = BuildRequestUrl(options).Result;
         CustomerGetResponse = await Http.GetFromJsonAsync<CustomerGetResponse>(url);
+        StateHasChanged();
     }
 
     private async Task<string> BuildRequestUrl(QueryPageOptions options)
@@ -146,14 +116,32 @@
         return await Task.FromResult(url);
     }
 
-    protected static Task<CustomerDetailEntity> OnAddAsync()
+    private async Task OnPageClick(int pageIndex, int pageItems)
     {
-        return Task.FromResult(new CustomerDetailEntity() { InDate = DateTime.Now });
+        await this.SearchCustomerList(new QueryPageOptions { PageIndex = pageIndex, PageItems = pageItems });
     }
 
-    protected Task<bool> OnSaveAsync(CustomerDetailEntity item)
+    private async Task OnPageItemsChanged(int pageItems)
     {
-        
-        return Task.FromResult(true);
+        await this.SearchCustomerList(new QueryPageOptions { PageIndex = 0, PageItems = pageItems });
     }
-}
+
+    protected async Task CustomerButton(IEnumerable<CustomerDetailEntity> items)
+    {
+        await ToastService.Show(new ToastOption()
+        {
+            
+            Delay = 1000,
+            Category = ToastCategory.Information,
+            Title = "消息通知",
+            Content = "请选择要删除的数据"
+        });
+    }
+
+    protected Task OnRowButtonClick(CustomerDetailEntity item)
+    {
+
+        return Task.CompletedTask;
+    }
+
+    private Toast Toast { get; set; } }

@@ -1,91 +1,56 @@
-﻿
-<div class="panel-group margin-t10" id="accordion">
-    <div class="panel panel-primary" id="div_User" runat="server">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                <NavLink data-toggle="collapse" data-parent="#accordion"
-                         href="#collapseOne">
-                    <b>会员信息</b>
-                </NavLink>
-            </h4>
-        </div>
-        <div id="collapseOne" class="panel-collapse collapse in">
-            <div class="panel-body">
-                <ul class="navigation-ul">
-                    <li class="span-nav">
-                        <img src="images/menu/member.png" />
-                        <NavLink href="customer/create">新增会员</NavLink>
-                    </li>
-                    <li class="span-nav">
-                        <img src="images/menu/members.png" />
-                        <NavLink href="customer/list">会员管理</NavLink>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="panel panel-primary" id="div_User" runat="server">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion"
-                   href="#collapseOne">
-                    <b>消费充值</b>
-                </a>
-            </h4>
-        </div>
-        <div id="collapseOne" class="panel-collapse collapse in">
-            <div class="panel-body">
-                <ul class="navigation-ul">
-                    <li class="span-nav">
-                        <img src="images/menu/consume.png" />
-                        <NavLink href="Customer/Consume">消费结算</NavLink>
-                    </li>
-                    <li class="span-nav">
-                        <img src="images/menu/money.png" />
-                        <NavLink href="Recharge/Index">充值记录</NavLink>
-                    </li>
-                    <li class="span-nav">
-                        <img src="images/menu/cash.png" />
-                        <NavLink href="ConsumeRecord/Index">消费记录</NavLink>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="panel panel-primary" id="div_SysMng" runat="server">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion"
-                   href="#collapseSys">
-                    <b>系统管理</b>
-                </a>
-            </h4>
-        </div>
-        <div id="collapseSys" class="panel-collapse collapse in">
-            <div class="panel-body">
-                <ul class="navigation-ul">
-                    <li class="span-nav">
-                        <img src="images/menu/setting.png" />
-                        <NavLink href="System/Index">系统配置</NavLink>
-                    </li>
-                    <li class="span-nav">
-                        <img src="images/menu/categories.png" />
-                        <NavLink href="System/CategoryIndex">类别维护</NavLink>
-                    </li>
-                    <li class="span-nav">
-                        <img src="images/menu/Salad.png" />
-                        <NavLink href="System/DishIndex">菜品维护</NavLink>
-                    </li>
-                    <li class="span-nav">
-                        <img src="images/menu/statistics.png" />
-                        <NavLink href="Statistics/DailyReport">每日汇总</NavLink>
-                    </li>
-                    <li class="span-nav">
-                        <img src="images/pwd.jpg" />
-                        <NavLink href="Users/Password">修改密码</NavLink>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
+﻿<Collapse ShowArrow="true">
+    <CollapseItems>
+        <CollapseItem Text="会员信息" IsCollapsed="false">
+            <ul class="navigation-ul">
+                <li class="span-nav">
+                    <img src="images/menu/member.png" />
+                    <NavLink href="customer/create">新增会员</NavLink>
+                </li>
+                <li class="span-nav">
+                    <img src="images/menu/members.png" />
+                    <NavLink href="customer/list">会员管理</NavLink>
+                </li>
+            </ul>
+        </CollapseItem>
+        <CollapseItem Text="消费充值" IsCollapsed="false">
+            <ul class="navigation-ul">
+                <li class="span-nav">
+                    <img src="images/menu/consume.png" />
+                    <NavLink href="Customer/Consume">消费结算</NavLink>
+                </li>
+                <li class="span-nav">
+                    <img src="images/menu/money.png" />
+                    <NavLink href="Recharge/Index">充值记录</NavLink>
+                </li>
+                <li class="span-nav">
+                    <img src="images/menu/cash.png" />
+                    <NavLink href="ConsumeRecord/Index">消费记录</NavLink>
+                </li>
+            </ul>
+        </CollapseItem>
+        <CollapseItem Text="系统管理" IsCollapsed="false">
+            <ul class="navigation-ul">
+                <li class="span-nav">
+                    <img src="images/menu/setting.png" />
+                    <NavLink href="System/Index">系统配置</NavLink>
+                </li>
+                <li class="span-nav">
+                    <img src="images/menu/categories.png" />
+                    <NavLink href="System/CategoryIndex">类别维护</NavLink>
+                </li>
+                <li class="span-nav">
+                    <img src="images/menu/Salad.png" />
+                    <NavLink href="System/DishIndex">菜品维护</NavLink>
+                </li>
+                <li class="span-nav">
+                    <img src="images/menu/statistics.png" />
+                    <NavLink href="Statistics/DailyReport">每日汇总</NavLink>
+                </li>
+                <li class="span-nav">
+                    <img src="images/pwd.jpg" />
+                    <NavLink href="Users/Password">修改密码</NavLink>
+                </li>
+            </ul>
+        </CollapseItem>
+    </CollapseItems>
+</Collapse>
