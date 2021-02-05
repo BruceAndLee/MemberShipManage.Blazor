@@ -49,21 +49,27 @@
                                    ShowEditButton="false"
                                    IsMultipleSelect="true"
                                    @bind-SelectedRows="@SelectedRows"
-                                   ShowDefaultButtons="true"
+                                   
                                    ShowExportButton="true"
-                                   ShowExtendButtons="true" ShowSkeleton="true"
-                                   OnQueryAsync="OnQueryAsync">
+                                
+                                   ShowSearch="true" ShowAdvancedSearch="true"
+                                   ShowDefaultButtons="true"
+                                   AddModalTitle="增加测试数据窗口"
+                                   EditModalTitle="编辑测试数据窗口"
+                                   OnQueryAsync="OnQueryAsync"
+                                   OnAddAsync="@OnAddAsync"
+                                   OnSaveAsync="@OnSaveAsync">
                                 <TableColumns Context="customer">
                                     <TableColumn @bind-Field="@customer.UserNo" Text="用户名" Width="180" Sortable="true" Filterable="true" />
                                     <TableColumn @bind-Field="@customer.Name" Text="姓名" Width="120" />
                                     <TableColumn @bind-Field="@customer.Sex" Text="性别" Width="80" />
                                     <TableColumn @bind-Field="@customer.Amount" Text="余额" Width="150" />
                                     <TableColumn @bind-Field="@customer.ParentCustomerName" Text="推荐人" Width="80" />
-                                    @*<TableColumn @bind-Field="@customer.InDate" Text="注册日期" Width="150">
+                                    <TableColumn @bind-Field="@customer.InDate" Text="注册日期" Width="150">
                                         <Template Context="value">
                                             <span>@value.Value.GetValueOrDefault(DateTime.Now).ToString("yyyy-MM-dd hh:mm:ss")</span>
                                         </Template>
-                                    </TableColumn>*@
+                                    </TableColumn>
                                 </TableColumns>
                                 <EditTemplate Context="edit">
                                     <div class="form-inline">
@@ -77,6 +83,18 @@
                                         </div>
                                     </div>
                                 </EditTemplate>
+                                <SearchTemplate Context="search">
+                                    <div class="form-inline">
+                                        <div class="row">
+                                            <div class="form-group col-12 col-sm-6">
+                                                <BootstrapInput @bind-Value="@search.Name" placeholder="不可为空，50字以内" maxlength="50" ShowLabel="true" DisplayText="姓名" />
+                                            </div>
+                                            <div class="form-group col-12 col-sm-6">
+                                                <BootstrapInput @bind-Value="@search.UserNo" placeholder="不可为空，50字以内" maxlength="50" ShowLabel="true" DisplayText="地址" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </SearchTemplate>
                             </Table>
                         </div>
                     </div>
@@ -85,7 +103,7 @@
         </div>
     </div>
 </EditForm>
-@code { 
+@code {
     private EditContext editContext;
     private CustomerGetRequest request = new CustomerGetRequest();
     private CustomerGetResponse CustomerGetResponse { get; set; }
@@ -104,6 +122,7 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         editContext = new EditContext(request);
     }
 
@@ -125,5 +144,16 @@
         url = string.Concat(url, criteria);
 
         return await Task.FromResult(url);
-    } 
+    }
+
+    protected static Task<CustomerDetailEntity> OnAddAsync()
+    {
+        return Task.FromResult(new CustomerDetailEntity() { InDate = DateTime.Now });
+    }
+
+    protected Task<bool> OnSaveAsync(CustomerDetailEntity item)
+    {
+        
+        return Task.FromResult(true);
+    }
 }
