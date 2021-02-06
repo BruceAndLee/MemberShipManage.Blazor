@@ -36,7 +36,7 @@ SELECT A.ID
   ,B.InUser
   ,B.Name
   ,ISNULL(C.Amount,0) AS Amount
-  ,B.ParentID AS ParentCustomerID
+  ,B.ParentID
   ,R.Amount AS RebateAmount
   ,D.Name AS ParentCustomerName
   ,B.InDate

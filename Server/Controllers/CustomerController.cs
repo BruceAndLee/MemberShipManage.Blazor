@@ -44,7 +44,7 @@ namespace MemberShipManage.Server.Controllers
             var customer = customerService.GetCustomerByKey(customerRequest.ID);
             customer.Name = customerRequest.Name;
             customer.Sex = customerRequest.Sex;
-            customer.ParentId = customerRequest.ParentID;
+            customer.ParentID = customerRequest.ParentID;
             customerService.UpdateCustomer(customer);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }

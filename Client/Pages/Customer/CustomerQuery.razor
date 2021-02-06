@@ -5,7 +5,8 @@
 
 @inherits MemberShipManage.Client.Pages.Common.ToastPage
 @inject HttpClient Http
-@inject DialogService DialogService;
+@inject DialogService DialogService
+@inject NavigationManager NavigationManager
 
 <div id="customerlist">
     <GroupBox Title="查询">
@@ -53,7 +54,7 @@
                ShowExtendButtons="true"
                ShowRefresh="false"
                IsMultipleSelect="true"
-               ExtendButtonColumnWidth="100"
+               ExtendButtonColumnWidth="80"
                @bind-SelectedRows="@SelectedRows"
                ShowExportButton="true">
             <TableToolbarTemplate>
@@ -100,7 +101,6 @@
         </Pagination>
     </div>
 </div>
-<CustomerEdit CustomerUpdateRequest="CurrentCustomer"></CustomerEdit>
 @code { private EditContext editContext;
     private CustomerGetRequest request = new CustomerGetRequest();
     private CustomerGetResponse CustomerGetResponse = new CustomerGetResponse { CustomerDetailList = new List<CustomerDetailEntity>() };
@@ -150,16 +150,7 @@
 
     protected Task OnAddButtonClick(IEnumerable<CustomerDetailEntity> items)
     {
-        var op = new ResultDialogOption()
-        {
-            Title = "数据查询窗口",
-            IsCentered = true,
-            ShowCloseButton = true,
-            ShowFooter = false,
-            Component = DynamicComponent.CreateComponent<CustomerEdit>()
-        };
-        DialogService.Show(op);
-        //this.ShowToast("请选择要删除的数据", "消息通知");
+        NavigationManager.NavigateTo("customer/create");
         return Task.CompletedTask;
 
     }
@@ -173,18 +164,18 @@
             Name = customer.Name,
             Sex = customer.Sex,
             UserNo = customer.UserNo,
-            ParentID = customer.ParentId
+            ParentID = customer.ParentID
         };
 
         var op = new ResultDialogOption()
         {
-            Title = "数据查询窗口",
+            Title = "编辑",
             IsCentered = true,
             ShowCloseButton = true,
             BodyTemplate = DynamicComponent.CreateComponent<CustomerEdit>(new KeyValuePair<string, object>[]
         {
                 new KeyValuePair<string, object>("CustomerUpdateRequest",this.CurrentCustomer )
-        })
+            })
         .Render()
         };
         DialogService.Show(op);
@@ -195,5 +186,4 @@
     {
         this.ShowToast("请选择要删除的数据", "消息通知");
         return Task.CompletedTask;
-    }
-}
+    } }

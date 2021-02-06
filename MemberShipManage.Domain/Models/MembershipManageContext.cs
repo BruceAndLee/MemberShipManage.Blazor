@@ -105,7 +105,7 @@ namespace MemberShipManage.Server.Models
 
                 entity.Property(e => e.Name).HasMaxLength(20);
 
-                entity.Property(e => e.ParentId).HasColumnName("ParentID");
+                entity.Property(e => e.ParentID).HasColumnName("ParentID");
 
                 entity.Property(e => e.Password)
                     .IsRequired()

@@ -1,9 +1,10 @@
 ﻿@using MemberShipManage.Shared.CustomerDTO
 @using MemberShipManage.Infrastructurer
 @inject HttpClient Http
+@inject ToastService ToastService
 <EditForm EditContext="editContext" OnValidSubmit="onValidSubmit" OnInvalidSubmit="onInvalidSubmit">
     <div id="customer" class="margin-t10">
-        <GroupBox Title="创建会员">
+        <GroupBox Title="编辑会员信息">
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
@@ -72,10 +73,22 @@
         customerList = await Http.GetFromJsonAsync<List<MemberShipManage.Server.Models.Customer>>(APIUrlDefination.CUSTOMER_GET_ALL);
     }
 
-    private void onValidSubmit()
+    private async Task onValidSubmit()
     {
-        this.Http.PutAsJsonAsync<CustomerUpdateRequest>(APIUrlDefination.CUSTOMER_CREATE, CustomerUpdateRequest);
+        var result = await this.Http.PutAsJsonAsync<CustomerUpdateRequest>(APIUrlDefination.CUSTOMER_UPDATE, CustomerUpdateRequest);
+        if (result.IsSuccessStatusCode)
+        {
+            await ToastService.Show(new ToastOption()
+            {
+                Category = ToastCategory.Information,
+                
+                Title = "提示信息",
+                Content = "保存成功"
+            });
+
+        }
     }
+
     private void onInvalidSubmit()
     {
 

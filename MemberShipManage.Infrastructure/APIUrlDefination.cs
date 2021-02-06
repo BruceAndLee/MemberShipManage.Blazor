@@ -9,6 +9,7 @@ namespace MemberShipManage.Infrastructurer
         #region customer
 
         public const string CUSTOMER_CREATE = "customer/create";
+        public const string CUSTOMER_UPDATE = "customer/update";
         public const string CUSTOMER_GET_ALL = "customer/get/all";
         public const string CUSTOMER_GET = "customer/get";
 
