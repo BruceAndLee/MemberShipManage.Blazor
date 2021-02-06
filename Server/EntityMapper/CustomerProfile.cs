@@ -13,6 +13,7 @@ namespace MemberShipManage.Server.EntityMapper
         public CustomerProfile()
         {
             CreateMap<CustomerCreateRequest, Customer>();
+            CreateMap<CustomerUpdateRequest, CustomerDetailEntity>();
         }
     }
 }

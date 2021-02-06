@@ -1,0 +1,88 @@
+﻿@using MemberShipManage.Shared.CustomerDTO
+@using MemberShipManage.Infrastructurer
+@inject HttpClient Http
+<EditForm EditContext="editContext" OnValidSubmit="onValidSubmit" OnInvalidSubmit="onInvalidSubmit">
+    <div id="customer" class="margin-t10">
+        <GroupBox Title="创建会员">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label><span class="text-danger">*</span>用户名：</label>
+                        <div>
+                            <input id="userNo" name="userNo" type="text" @bind-value="CustomerUpdateRequest.UserNo" disabled class="form-control" maxlength="11" autocomplete="off" placeholder="输入手机号" />
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><span class="text-danger">*</span>姓名：</label>
+                        <div>
+                            <input id="name" name="name" type="text" class="form-control" @onblur="validateForm" @bind-value="CustomerUpdateRequest.Name" maxlength="10" autocomplete="off" />
+                            <ValidationMessage For="()=>CustomerUpdateRequest.Name"></ValidationMessage>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><span class="text-danger">*</span>性别：</label>
+                        <div>
+                            <select id="userSex" name="sex" class="form-control" @onblur="validateForm" @bind="CustomerUpdateRequest.Sex">
+                                <option value="">---请选择---</option>
+                                <option value="1">男</option>
+                                <option value="0">女</option>
+                            </select>
+                            <ValidationMessage For="()=>CustomerUpdateRequest.Sex"></ValidationMessage>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>推荐人：</label>
+                        <div>
+                            <InputSelect @bind-Value="CustomerUpdateRequest.ParentID" class="form-control">
+                                @foreach (var customer in customerList)
+                                {
+                                    <option value="@customer.Id">@customer.Name</option>
+                                }
+                            </InputSelect>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label></label>
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-primary"><i fa fa-floppy-o></i>保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </GroupBox>
+    </div>
+    <DataAnnotationsValidator />
+</EditForm>
+
+@code {
+    [Parameter]
+    public CustomerUpdateRequest CustomerUpdateRequest { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+
+    private EditContext editContext;
+    private List<MemberShipManage.Server.Models.Customer> customerList = new List<MemberShipManage.Server.Models.Customer>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CustomerUpdateRequest == null) CustomerUpdateRequest = new CustomerUpdateRequest();
+        editContext = new EditContext(CustomerUpdateRequest);
+        customerList = await Http.GetFromJsonAsync<List<MemberShipManage.Server.Models.Customer>>(APIUrlDefination.CUSTOMER_GET_ALL);
+    }
+
+    private void onValidSubmit()
+    {
+        this.Http.PutAsJsonAsync<CustomerUpdateRequest>(APIUrlDefination.CUSTOMER_CREATE, CustomerUpdateRequest);
+    }
+    private void onInvalidSubmit()
+    {
+
+    }
+
+    private void validateForm()
+    {
+        editContext.Validate();
+    }
+}

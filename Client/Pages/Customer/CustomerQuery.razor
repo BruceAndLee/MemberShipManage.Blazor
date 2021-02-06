@@ -2,8 +2,11 @@
 @using MemberShipManage.Shared.CustomerDTO
 @using MemberShipManage.Infrastructurer
 @using MemberShipManage.Infrastructurer.Extension
+
+@inherits MemberShipManage.Client.Pages.Common.ToastPage
 @inject HttpClient Http
-@inject ToastService ToastService
+@inject DialogService DialogService;
+
 <div id="customerlist">
     <GroupBox Title="查询">
         <div class="row" style="height:40px;line-height:35px">
@@ -47,13 +50,14 @@
                ShowLineNo="true"
                LineNoText="序号"
                ShowDefaultButtons="false"
+               ShowExtendButtons="true"
                ShowRefresh="false"
                IsMultipleSelect="true"
+               ExtendButtonColumnWidth="100"
                @bind-SelectedRows="@SelectedRows"
                ShowExportButton="true">
             <TableToolbarTemplate>
-                <TableToolbarButton TItem="CustomerDetailEntity" Color="Color.Primary" Icon="fa fa-fw fa-edit" Text="新增" OnClickCallback="@CustomerButton" />
-                <TableToolbarButton TItem="CustomerDetailEntity" Color="Color.Danger" Icon="fa fa-fw fa-edit" Text="删除" OnClickCallback="@CustomerButton" />
+                <TableToolbarButton TItem="CustomerDetailEntity" Color="Color.Primary" Icon="fa fa-fw fa-edit" Text="新增" OnClickCallback="@OnAddButtonClick" />
             </TableToolbarTemplate>
             <TableColumns Context="customer">
                 <TableColumn @bind-Field="@customer.UserNo" Text="用户名" Width="180" Sortable="true" Filterable="true" />
@@ -72,7 +76,20 @@
                 </TableColumn>
             </TableColumns>
             <RowButtonTemplate>
-                <TableCellButton Size="Size.ExtraSmall" Color="Color.Success" TItem="CustomerDetailEntity" Item="@context" Icon="fa fa-edit" Text="编辑" OnClickCallback="@OnRowButtonClick" />
+                <TableCellButton Size="Size.ExtraSmall"
+                                 Color="Color.Success"
+                                 TItem="CustomerDetailEntity"
+                                 Item="@context"
+                                 Icon="fa fa-edit"
+                                 Text="编辑"
+                                 OnClickCallback="@OnEditButtonClick" />
+                <TableCellButton Size="Size.ExtraSmall"
+                                 Color="Color.Danger"
+                                 TItem="CustomerDetailEntity"
+                                 Item="@context"
+                                 Icon="fa fa-cross"
+                                 Text="删除"
+                                 OnClickCallback="@OnDeleteButtonClick" />
             </RowButtonTemplate>
         </Table>
         <Pagination PageItems="@PageItemCount"
@@ -83,11 +100,12 @@
         </Pagination>
     </div>
 </div>
-<Toast @ref="Toast" Placement="Placement.TopEnd"></Toast>
+<CustomerEdit CustomerUpdateRequest="CurrentCustomer"></CustomerEdit>
 @code { private EditContext editContext;
     private CustomerGetRequest request = new CustomerGetRequest();
     private CustomerGetResponse CustomerGetResponse = new CustomerGetResponse { CustomerDetailList = new List<CustomerDetailEntity>() };
     private IEnumerable<CustomerDetailEntity> SelectedRows = new List<CustomerDetailEntity>();
+    private CustomerUpdateRequest CurrentCustomer { get; set; }
     private IEnumerable<int> PageItems => new int[] { 10, 20, 50, 100 };
     private int PageItemCount { get; set; }
 
@@ -130,24 +148,51 @@
         await this.SearchCustomerList(new QueryPageOptions { PageIndex = 0, PageItems = pageItems });
     }
 
-    protected async Task CustomerButton(IEnumerable<CustomerDetailEntity> items)
+    protected Task OnAddButtonClick(IEnumerable<CustomerDetailEntity> items)
     {
-        await ToastService.Show(new ToastOption()
+        var op = new ResultDialogOption()
         {
+            Title = "数据查询窗口",
+            IsCentered = true,
+            ShowCloseButton = true,
+            ShowFooter = false,
+            Component = DynamicComponent.CreateComponent<CustomerEdit>()
+        };
+        DialogService.Show(op);
+        //this.ShowToast("请选择要删除的数据", "消息通知");
+        return Task.CompletedTask;
 
-            Delay = 1000,
-            Host = Toast,
-            Category = ToastCategory.Information,
-            Title = "消息通知",
-            Content = "请选择要删除的数据"
-        });
     }
 
-    protected Task OnRowButtonClick(CustomerDetailEntity item)
+    protected Task OnEditButtonClick(CustomerDetailEntity customer)
     {
+        this.CurrentCustomer = new CustomerUpdateRequest
+        {
+            ID = customer.Id,
+            Name = customer.Name,
+            Sex = customer.Sex,
+            UserNo = customer.UserNo,
+            ParentID = customer.ParentId
+        };
 
+        var op = new ResultDialogOption()
+        {
+            Title = "数据查询窗口",
+            IsCentered = true,
+            ShowCloseButton = true,
+            BodyTemplate = DynamicComponent.CreateComponent<CustomerEdit>(new KeyValuePair<string, object>[]
+            {
+                new KeyValuePair<string, object>("CustomerUpdateRequest",this.CurrentCustomer )
+            })
+            .Render()
+        };
+        DialogService.Show(op);
         return Task.CompletedTask;
     }
 
-    private Toast Toast { get; set; }
+    protected Task OnDeleteButtonClick(CustomerDetailEntity items)
+    {
+        this.ShowToast("请选择要删除的数据", "消息通知");
+        return Task.CompletedTask;
+    }
 }
