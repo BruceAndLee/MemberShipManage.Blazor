@@ -9,8 +9,10 @@ namespace MemberShipManage.Service.CustomerSvc
 {
     public interface ICustomerService
     {
+        Customer GetCustomerByKey(int customerId);
         List<Customer> GetCustomerList();
         void CreateCustomer(Customer customer);
+        void UpdateCustomer(Customer customer);
         CustomerGetResponse GetCustomerList(CustomerGetRequest request);
     }
 }

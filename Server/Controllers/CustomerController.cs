@@ -6,6 +6,8 @@ using MemberShipManage.Infrastructurer.Pagination;
 using MemberShipManage.Server.Models;
 using MemberShipManage.Service.CustomerSvc;
 using MemberShipManage.Shared.CustomerDTO;
+using System.Net.Http;
+using System.Net;
 
 namespace MemberShipManage.Server.Controllers
 {
@@ -29,10 +31,22 @@ namespace MemberShipManage.Server.Controllers
         }
 
         [HttpPost("create")]
-        public void CreateCustomer([FromBody]CustomerCreateRequest customerRequest)
+        public HttpResponseMessage CreateCustomer([FromBody]CustomerCreateRequest customerRequest)
         {
             var customer = mapper.Map<Customer>(customerRequest);
             customerService.CreateCustomer(customer);
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        [HttpPut("update")]
+        public HttpResponseMessage UpdateCustomer([FromBody] CustomerUpdateRequest customerRequest)
+        {
+            var customer = customerService.GetCustomerByKey(customerRequest.ID);
+            customer.Name = customerRequest.Name;
+            customer.Sex = customerRequest.Sex;
+            customer.ParentId = customerRequest.ParentID;
+            customerService.UpdateCustomer(customer);
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
         [HttpGet("get")]

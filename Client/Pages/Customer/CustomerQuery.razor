@@ -166,6 +166,7 @@
 
     protected Task OnEditButtonClick(CustomerDetailEntity customer)
     {
+
         this.CurrentCustomer = new CustomerUpdateRequest
         {
             ID = customer.Id,
@@ -181,10 +182,10 @@
             IsCentered = true,
             ShowCloseButton = true,
             BodyTemplate = DynamicComponent.CreateComponent<CustomerEdit>(new KeyValuePair<string, object>[]
-            {
+        {
                 new KeyValuePair<string, object>("CustomerUpdateRequest",this.CurrentCustomer )
-            })
-            .Render()
+        })
+        .Render()
         };
         DialogService.Show(op);
         return Task.CompletedTask;
