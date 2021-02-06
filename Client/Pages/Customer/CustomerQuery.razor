@@ -6,30 +6,32 @@
 @inject ToastService ToastService
 <div id="customerlist">
     <GroupBox Title="查询">
-        <div class="form-inline">
-            <div class="row">
-                <div class="form-group col-sm-4">
-                    <label class="control-label">用户名：</label>
-                    <BootstrapInput TValue="string" @bind-Value="request.UserNo" placeholder=""></BootstrapInput>
-                </div>
-                <div class="form-group col-sm-4">
-                    <label class="control-label">姓名：</label>
-                    <BootstrapInput TValue="string" @bind-Value="request.Name" placeholder=""></BootstrapInput>
-                </div>
-                <div class="form-group col-sm-4">
-                    <label class="control-label">性别：</label>
-                    <Select @bind-Value="@request.Sex">
-                        <Options>
-                            <SelectOption Text="---全部---" Value="" />
-                            <SelectOption Text="男" Value="1" />
-                            <SelectOption Text="女" Value="0" />
-                        </Options>
-                    </Select>
-                </div>
+        <div class="row" style="height:40px;line-height:35px">
+            <div class="col-md-1">
+                <label class="control-label">用户名：</label>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 text-right">
+            <div class="col-md-2">
+                <BootstrapInput TValue="string" @bind-Value="request.UserNo" placeholder=""></BootstrapInput>
+            </div>
+            <div class="col-md-1">
+                <label class="control-label">姓名：</label>
+            </div>
+            <div class="col-md-2">
+                <BootstrapInput TValue="string" @bind-Value="request.Name" placeholder=""></BootstrapInput>
+            </div>
+            <div class="col-md-1">
+                <label class="control-label">性别：</label>
+            </div>
+            <div class="col-md-2">
+                <Select @bind-Value="@request.Sex">
+                    <Options>
+                        <SelectOption Text="---全部---" Value="" />
+                        <SelectOption Text="男" Value="1" />
+                        <SelectOption Text="女" Value="0" />
+                    </Options>
+                </Select>
+            </div>
+            <div class="col-md-3 text-right">
                 <Button Color="Color.Primary" @onclick="()=> SearchCustomerList(new QueryPageOptions {PageIndex=0,PageItems=PageItemCount })">查询</Button>
                 <Button Color="Color.Secondary" @onclick="()=> SearchCustomerList(new QueryPageOptions {PageIndex=0,PageItems=PageItemCount })">重置</Button>
             </div>
@@ -81,7 +83,7 @@
         </Pagination>
     </div>
 </div>
-<Toast @ref="Toast" Placement="Placement.Top"></Toast>
+<Toast @ref="Toast" Placement="Placement.TopEnd"></Toast>
 @code { private EditContext editContext;
     private CustomerGetRequest request = new CustomerGetRequest();
     private CustomerGetResponse CustomerGetResponse = new CustomerGetResponse { CustomerDetailList = new List<CustomerDetailEntity>() };
@@ -134,6 +136,7 @@
         {
 
             Delay = 1000,
+            Host = Toast,
             Category = ToastCategory.Information,
             Title = "消息通知",
             Content = "请选择要删除的数据"
@@ -146,4 +149,5 @@
         return Task.CompletedTask;
     }
 
-    private Toast Toast { get; set; } }
+    private Toast Toast { get; set; }
+}

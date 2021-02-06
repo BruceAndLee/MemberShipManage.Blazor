@@ -1,0 +1,19 @@
+﻿@inject ToastService ToastService
+<Toast @ref="Toast" Placement="Placement.TopEnd"></Toast>
+
+@code {
+    private Toast Toast { get; set; }
+
+    protected void ShowToast(string content, string title, int delay = 1000)
+    {
+        ToastService.Show(new ToastOption()
+        {
+
+            Delay = 1000,
+            Host = Toast,
+            Category = ToastCategory.Information,
+            Title = "消息通知",
+            Content = "请选择要删除的数据"
+        });
+    }
+}
