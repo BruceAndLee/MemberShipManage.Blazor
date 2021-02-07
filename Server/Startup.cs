@@ -18,7 +18,7 @@ using FluentValidation;
 using MemberShipManage.Shared.CustomerDTO;
 using MemberShipManage.Validation;
 using Microsoft.OpenApi.Models;
-
+using FluentValidation.AspNetCore;
 namespace MemberShipManage.Server
 {
     public class Startup
@@ -35,14 +35,27 @@ namespace MemberShipManage.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSwaggerGen();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddFluentValidation();
             services.AddRazorPages();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.AddTransient<IValidator<CustomerCreateRequest>, CustomerCreateRequestValidator>();
             services.AddDbContext<MembershipManageContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbConnectionString")));
-
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "MemberShip Manager APIs",
+                    Description = "Swagger Instruction",
+                    Contact = new OpenApiContact
+                    {
+                        Email = "lilei1986abc@163.com",
+                        Name = "Bruce Li",
+                        Url = new Uri("http://www.51mordern.com")
+                    }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
