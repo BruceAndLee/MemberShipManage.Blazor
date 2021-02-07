@@ -61,7 +61,7 @@
     public CustomerUpdateRequest CustomerUpdateRequest { get; set; }
 
     [Parameter]
-    public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+    public EventCallback<MemberShipManage.Infrastructure.Extension.DialogCloseEventArgs> OnDialogCloseCallback { get; set; }
 
     private EditContext editContext;
     private List<MemberShipManage.Server.Models.Customer> customerList = new List<MemberShipManage.Server.Models.Customer>();
@@ -81,7 +81,7 @@
             await ToastService.Show(new ToastOption()
             {
                 Category = ToastCategory.Information,
-                
+
                 Title = "提示信息",
                 Content = "保存成功"
             });

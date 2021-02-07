@@ -58,7 +58,11 @@
                @bind-SelectedRows="@SelectedRows"
                ShowExportButton="true">
             <TableToolbarTemplate>
-                <TableToolbarButton TItem="CustomerDetailEntity" Color="Color.Primary" Icon="fa fa-fw fa-edit" Text="新增" OnClickCallback="@OnAddButtonClick" />
+                <TableToolbarButton TItem="CustomerDetailEntity"
+                                    Color="Color.Primary"
+                                    Icon="fa fa-fw fa-edit"
+                                    Text="新增"
+                                    OnClickCallback="@OnAddButtonClick" />
             </TableToolbarTemplate>
             <TableColumns Context="customer">
                 <TableColumn @bind-Field="@customer.UserNo" Text="用户名" Width="180" Sortable="true" Filterable="true" />
@@ -157,8 +161,7 @@
 
     protected Task OnEditButtonClick(CustomerDetailEntity customer)
     {
-
-        this.CurrentCustomer = new CustomerUpdateRequest
+        var customerUpdateRequest = new CustomerUpdateRequest
         {
             ID = customer.Id,
             Name = customer.Name,
@@ -167,18 +170,17 @@
             ParentID = customer.ParentID
         };
 
-        var op = new ResultDialogOption()
+        var option = new ResultDialogOption()
         {
             Title = "编辑",
             IsCentered = true,
             ShowCloseButton = true,
             BodyTemplate = DynamicComponent.CreateComponent<CustomerEdit>(new KeyValuePair<string, object>[]
-        {
-                new KeyValuePair<string, object>("CustomerUpdateRequest",this.CurrentCustomer )
-            })
-        .Render()
+                {
+                    new KeyValuePair<string, object>("CustomerUpdateRequest",customerUpdateRequest)
+                }).Render()
         };
-        DialogService.Show(op);
+        DialogService.Show(option);
         return Task.CompletedTask;
     }
 
