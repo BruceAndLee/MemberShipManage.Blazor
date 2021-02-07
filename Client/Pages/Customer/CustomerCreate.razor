@@ -1,8 +1,9 @@
 ﻿@page "/customer/create"
 @using MemberShipManage.Shared.CustomerDTO
 @using MemberShipManage.Infrastructurer
-
+@using MemberShipManage.Infrastructure.Utility
 @inject HttpClient Http
+@inject IJSRuntime JSRuntime
 
 <EditForm EditContext="editContext" OnValidSubmit="onValidSubmit" OnInvalidSubmit="onInvalidSubmit">
     <div id="customer" class="margin-t10">
@@ -83,6 +84,7 @@
     {
         editContext = new EditContext(customer);
         customerList = await Http.GetFromJsonAsync<List<MemberShipManage.Server.Models.Customer>>(APIUrlDefination.CUSTOMER_GET_ALL);
+        await JSRuntime.SetLocalStorage("customers", Newtonsoft.Json.JsonConvert.SerializeObject(customerList));
     }
 
     private void onValidSubmit()

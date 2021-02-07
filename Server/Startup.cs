@@ -1,25 +1,19 @@
+using Autofac;
+using FluentValidation.AspNetCore;
+using MemberShipManage.Infrastructurer;
+using MemberShipManage.Repository.CustomerRep;
+using MemberShipManage.Server.Models;
+using MemberShipManage.Service.CustomerSvc;
+using MemberShipManage.Validations;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
-using Autofac;
-using Microsoft.EntityFrameworkCore;
-using MemberShipManage.Server.Models;
-using MemberShipManage.Infrastructurer;
-using MemberShipManage.Repository.CustomerRep;
-using MemberShipManage.Service.CustomerSvc;
-using System;
-using AutoMapper;
-using FluentValidation;
-using MemberShipManage.Shared.CustomerDTO;
-using MemberShipManage.Validation;
 using Microsoft.OpenApi.Models;
-using FluentValidation.AspNetCore;
-using MemberShipManage.Validations;
+using System;
+using System.Collections.Generic;
 
 namespace MemberShipManage.Server
 {
@@ -57,6 +51,23 @@ namespace MemberShipManage.Server
                         Url = new Uri("http://www.51mordern.com")
                     }
                 });
+
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        Implicit = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri("your-auth-url", UriKind.Relative),
+                            Scopes = new Dictionary<string, string>
+                            {
+                                { "readAccess", "Access read operations" },
+                                { "writeAccess", "Access write operations" }
+                            }
+                        }
+                    }
+                });
             });
         }
 
@@ -80,7 +91,7 @@ namespace MemberShipManage.Server
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
@@ -92,7 +103,14 @@ namespace MemberShipManage.Server
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Management API");
+                c.OAuthClientId("cleint-id");
+                c.OAuthClientSecret("client-secret");
+                c.OAuthRealm("client-realm");
+                c.OAuthAppName("OAuth-app");
+                c.OAuthUseBasicAuthenticationWithAccessCodeGrant();
             });
+
+            app.UseAuthentication();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
