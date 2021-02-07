@@ -19,6 +19,8 @@ using MemberShipManage.Shared.CustomerDTO;
 using MemberShipManage.Validation;
 using Microsoft.OpenApi.Models;
 using FluentValidation.AspNetCore;
+using MemberShipManage.Validations;
+
 namespace MemberShipManage.Server
 {
     public class Startup
@@ -39,7 +41,7 @@ namespace MemberShipManage.Server
             services.AddRazorPages();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-            services.AddTransient<IValidator<CustomerCreateRequest>, CustomerCreateRequestValidator>();
+            services.RegisterValidators();
             services.AddDbContext<MembershipManageContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbConnectionString")));
             services.AddSwaggerGen(c =>
             {
