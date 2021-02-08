@@ -12,15 +12,17 @@ namespace MemberShipManage.Server.Controllers
     public class TokenGenerateController : Controller
     {
         private readonly JWTTokenOptions _tokenOptions;
-        public TokenGenerateController(JWTTokenOptions tokenOptions)
+        private readonly JwtTokenHelper _jwtTokenHelper;
+        public TokenGenerateController(JWTTokenOptions tokenOptions, JwtTokenHelper jwtTokenHelper)
         {
             _tokenOptions = tokenOptions;
+            _jwtTokenHelper = jwtTokenHelper;
         }
 
         [HttpPost]
         public TokenResult GenerateJwt()
         {
-            var token = new JwtTokenHelper().BuildAuthorizeToken(123456, _tokenOptions);
+            var token = _jwtTokenHelper.BuildAuthorizeToken(123456, _tokenOptions);
             return token;
         }
     }

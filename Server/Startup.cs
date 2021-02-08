@@ -57,23 +57,6 @@ namespace MemberShipManage.Server
                     }
                 });
 
-                //c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-                //{
-                //    Type = SecuritySchemeType.OAuth2,
-                //    Flows = new OpenApiOAuthFlows
-                //    {
-                //        Implicit = new OpenApiOAuthFlow
-                //        {
-                //            AuthorizationUrl = new Uri("your-auth-url", UriKind.Relative),
-                //            Scopes = new Dictionary<string, string>
-                //            {
-                //                { "readAccess", "Access read operations" },
-                //                { "writeAccess", "Access write operations" }
-                //            }
-                //        }
-                //    }
-                //});
-
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
                     Description = "在下框中输入请求头中需要添加Jwt授权Token：Bearer Token",
@@ -129,7 +112,7 @@ namespace MemberShipManage.Server
                     //获取或设置一个字符串，该字符串表示将用于检查的有效受众反对令牌的观众。
                     ValidAudience = JWTTokenOptions.Audience,
                     //是否验证发起人
-                    ValidateIssuer = false,
+                    ValidateIssuer = true,
                     //是否验证订阅者
                     ValidateAudience = false,
                     ////允许的服务器时间偏移量
@@ -193,6 +176,7 @@ namespace MemberShipManage.Server
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
             builder.RegisterType<CustomerRepository>().As<ICustomerRepository>().InstancePerLifetimeScope();
             builder.RegisterType<CustomerService>().As<ICustomerService>().InstancePerLifetimeScope();
+            builder.RegisterType<JwtTokenHelper>().InstancePerLifetimeScope();
         }
     }
 }

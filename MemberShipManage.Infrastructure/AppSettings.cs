@@ -9,5 +9,7 @@ namespace MemberShipManage.Infrastructurer
         public string DBConnectionString { get; set; }
 
         public string DbScriptXmlPath { get; set; }
+
+        public string ClientID { get; set; }
     }
 }
