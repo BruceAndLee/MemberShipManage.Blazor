@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using MemberShipManage.Infrastructurer.Pagination;
 using MemberShipManage.Server.Models;
 using MemberShipManage.Service.CustomerSvc;
 using MemberShipManage.Shared.CustomerDTO;
-using System.Net.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 
 namespace MemberShipManage.Server.Controllers
 {
@@ -38,6 +37,7 @@ namespace MemberShipManage.Server.Controllers
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
+        [Authorize]
         [HttpPut("update")]
         public HttpResponseMessage UpdateCustomer([FromBody] CustomerUpdateRequest customerRequest)
         {
