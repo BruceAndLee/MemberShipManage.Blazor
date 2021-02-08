@@ -1,4 +1,5 @@
-﻿using MemberShipManage.Server.Authetication;
+﻿using MemberShipManage.Infrastructurer;
+using MemberShipManage.Server.Authetication;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace MemberShipManage.Server.Controllers
         [HttpPost]
         public TokenResult GenerateJwt()
         {
-            var token = _jwtTokenHelper.BuildAuthorizeToken(123456, _tokenOptions);
+            var token = _jwtTokenHelper.BuildAuthorizeToken(CustomSettings.appSettings.ClientID, _tokenOptions);
             return token;
         }
     }

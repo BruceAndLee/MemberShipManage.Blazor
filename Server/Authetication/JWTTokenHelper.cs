@@ -11,12 +11,12 @@ namespace MemberShipManage.Server.Authetication
 {
     public class JwtTokenHelper
     {
-        public TokenResult BuildAuthorizeToken(int memberId, JWTTokenOptions _tokenOptions)
+        public TokenResult BuildAuthorizeToken(string clientId, JWTTokenOptions _tokenOptions)
         {
             //基于声明的认证
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name,memberId.ToString()),
+                new Claim(ClaimTypes.Name,clientId),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())//jwt的唯一标识
             };
 
