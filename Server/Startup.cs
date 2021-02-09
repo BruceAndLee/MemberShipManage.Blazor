@@ -30,7 +30,7 @@ namespace MemberShipManage.Server
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            configuration.GetSection("AppSettings").Bind(CustomSettings.AppSettings);
+            //configuration.GetSection("AppSettings").Bind(CustomSettings.AppSettings);
         }
 
         public IConfiguration Configuration { get; }
@@ -51,7 +51,7 @@ namespace MemberShipManage.Server
                 options.AppendTrailingSlash = true;
             });
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            //services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.RegisterValidators();
             services.AddDbContext<MembershipManageContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbConnectionString")));
             services.AddSwaggerGen(c =>

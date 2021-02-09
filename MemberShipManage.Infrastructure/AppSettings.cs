@@ -1,15 +1,37 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace MemberShipManage.Infrastructurer
 {
     public class AppSettings
     {
-        public string DBConnectionString { get; set; }
+        private static readonly IConfigurationRoot _config;
 
-        public string DbScriptXmlPath { get; set; }
+        static AppSettings()
+        {
+            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+                                                    .AddJsonFile("appsettings.json", true, true);
+            _config = builder.Build();
+        }
 
-        public string ClientID { get; set; }
+        public string DbScriptXmlPath => _config["DbScriptXmlPath"];
+
+        public string ClientID => _config["ClientID"];
+
+        public static class Caching
+        {
+            /// <summary>
+            /// RedisConnectionString
+            /// </summary>
+            public static string RedisConnectionString => _config["Caching:RedisConnectionString"];
+
+            /// <summary>
+            /// 是否开启
+            /// </summary>
+            public static bool IsOpen => Convert.ToBoolean(_config["Caching:IsOpen"]);
+        }
     }
 }
