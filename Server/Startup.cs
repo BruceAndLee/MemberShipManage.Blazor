@@ -1,13 +1,16 @@
 using Autofac;
 using FluentValidation.AspNetCore;
+using MemberShipManage.Infrastructure.MiddleWare;
 using MemberShipManage.Infrastructurer;
 using MemberShipManage.Repository.CustomerRep;
 using MemberShipManage.Server.Authetication;
+using MemberShipManage.Server.Filters;
 using MemberShipManage.Server.Models;
 using MemberShipManage.Service.CustomerSvc;
 using MemberShipManage.Validations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +30,7 @@ namespace MemberShipManage.Server
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            configuration.GetSection("AppSettings").Bind(CustomSettings.appSettings);
+            configuration.GetSection("AppSettings").Bind(CustomSettings.AppSettings);
         }
 
         public IConfiguration Configuration { get; }
@@ -36,8 +39,17 @@ namespace MemberShipManage.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(SystemExceptionFilter));
+            });
             services.AddControllersWithViews().AddFluentValidation();
             services.AddRazorPages();
+            services.AddRouting(options =>
+            {
+                options.LowercaseUrls = true;
+                options.AppendTrailingSlash = true;
+            });
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.RegisterValidators();
@@ -156,6 +168,8 @@ namespace MemberShipManage.Server
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            app.UseMiddleware<SystemExceptionHandleMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

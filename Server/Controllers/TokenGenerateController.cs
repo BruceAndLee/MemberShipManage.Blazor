@@ -1,10 +1,6 @@
 ﻿using MemberShipManage.Infrastructurer;
 using MemberShipManage.Server.Authetication;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MemberShipManage.Server.Controllers
 {
@@ -12,18 +8,18 @@ namespace MemberShipManage.Server.Controllers
     [Route("api/[controller]/[action]")]
     public class TokenGenerateController : Controller
     {
-        private readonly JWTTokenOptions _tokenOptions;
-        private readonly JwtTokenHelper _jwtTokenHelper;
+        private readonly JWTTokenOptions tokenOptions;
+        private readonly JwtTokenHelper jwtTokenHelper;
         public TokenGenerateController(JWTTokenOptions tokenOptions, JwtTokenHelper jwtTokenHelper)
         {
-            _tokenOptions = tokenOptions;
-            _jwtTokenHelper = jwtTokenHelper;
+            this.tokenOptions = tokenOptions;
+            this.jwtTokenHelper = jwtTokenHelper;
         }
 
         [HttpPost]
         public TokenResult GenerateJwt()
         {
-            var token = _jwtTokenHelper.BuildAuthorizeToken(CustomSettings.appSettings.ClientID, _tokenOptions);
+            var token = jwtTokenHelper.BuildAuthorizeToken(CustomSettings.AppSettings.ClientID, tokenOptions);
             return token;
         }
     }

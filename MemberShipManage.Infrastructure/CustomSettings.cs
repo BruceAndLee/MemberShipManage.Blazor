@@ -6,6 +6,6 @@ namespace MemberShipManage.Infrastructurer
 {
     public class CustomSettings
     {
-        public static AppSettings appSettings { get; set; } = new AppSettings();
+        public static AppSettings AppSettings { get; set; } = new AppSettings();
     }
 }

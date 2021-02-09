@@ -11,7 +11,7 @@ namespace MemberShipManage.Infrastructurer
     {
         public static string GetScript(Type remotingClassType, string key)
         {
-            string xmlScriptPath = CustomSettings.appSettings.DbScriptXmlPath;
+            string xmlScriptPath = CustomSettings.AppSettings.DbScriptXmlPath;
             string xmlFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, xmlScriptPath);
             xmlFile = Path.Combine(xmlFile, remotingClassType.Name + ".xml");
 
@@ -21,7 +21,7 @@ namespace MemberShipManage.Infrastructurer
 
         public static string GetScript(string remotingClassFullName, string key)
         {
-            string folder = CustomSettings.appSettings.DbScriptXmlPath;
+            string folder = CustomSettings.AppSettings.DbScriptXmlPath;
             folder = ParseFolder(folder);
             string xmlFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folder);
             xmlFile = Path.Combine(xmlFile, remotingClassFullName + ".xml");
