@@ -40,7 +40,7 @@ namespace MemberShipManage.Server.Controllers
             return new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(token)
+                Content = new StringContent(token.ToJson())
             };
         }
     }
