@@ -1,0 +1,62 @@
+﻿@page  "/system/login"
+@using MemberShipManage.Shared.UserDTO
+<Card Color="Color.None" Class="ml-3  mt-2" style="width: 30rem;">
+    <CardHeader>
+        <b>会员登录</b>
+    </CardHeader>
+    <CardBody>
+        <EditForm EditContext="editContext" OnValidSubmit="onValidSubmit">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="control-label">用户名：</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="text" @bind-value="@user.UserNo" class="form-control" placeholder="请输入用户名" />
+                    <ValidationMessage For="()=>user.UserNo"></ValidationMessage>
+                </div>
+            </div>
+            <div class="margin-t10"></div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="control-label">密码：</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="text" @bind-value="user.Password" class="form-control" placeholder="请输入密码" />
+                    <ValidationMessage For="()=>user.Password"></ValidationMessage>
+                </div>
+            </div>
+            <div class="margin-t10"></div>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-8">
+                    <Button ButtonType="ButtonType.Submit" @onclick="@OnLoginButtonClick" Color="Color.Primary">登录</Button>
+                    <Button @onclick="@OnCancelButtonClick" Color="Color.Primary">取消</Button>
+                </div>
+            </div>
+            <DataAnnotationsValidator />
+        </EditForm>
+    </CardBody>
+</Card>
+
+@code {
+    private UserEntity user = new UserEntity();
+    private EditContext editContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(user);
+    }
+
+    private void OnLoginButtonClick(MouseEventArgs e)
+    {
+
+    }
+
+    private void OnCancelButtonClick(MouseEventArgs e)
+    {
+
+    }
+
+    private async Task onValidSubmit()
+    { }
+}

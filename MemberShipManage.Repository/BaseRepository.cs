@@ -40,6 +40,16 @@ namespace MemberShipManage.Repository
             return _unitOfWork.Context.Set<T>().Where(predicate).AsEnumerable<T>();
         }
 
+        public IQueryable<T> GetAsQuery(Expression<Func<T, bool>> predicate)
+        {
+            return _unitOfWork.Context.Set<T>().Where(predicate);
+        }
+
+        public T GetSingle(Expression<Func<T, bool>> predicate)
+        {
+            return _unitOfWork.Context.Set<T>().Find(predicate);
+        }
+
         public void Update(T entity)
         {
             _unitOfWork.Context.Entry(entity).State = EntityState.Modified;

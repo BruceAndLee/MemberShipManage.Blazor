@@ -17,9 +17,9 @@ namespace MemberShipManage.Infrastructurer
             _config = builder.Build();
         }
 
-        public string DbScriptXmlPath => _config["DbScriptXmlPath"];
+        public string DbScriptXmlPath => _config["AppSettings:DbScriptXmlPath"];
 
-        public string ClientID => _config["ClientID"];
+        public string ClientID => _config["AppSettings:ClientID"];
 
         public static class Caching
         {
