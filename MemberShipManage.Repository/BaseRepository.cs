@@ -47,7 +47,7 @@ namespace MemberShipManage.Repository
 
         public T GetSingle(Expression<Func<T, bool>> predicate)
         {
-            return _unitOfWork.Context.Set<T>().Find(predicate);
+            return _unitOfWork.Context.Set<T>().FirstOrDefault(predicate);
         }
 
         public void Update(T entity)
