@@ -1,12 +1,12 @@
 ﻿using MemberShipManage.Infrastructurer;
+using MemberShipManage.Infrastructurer.Extension;
 using MemberShipManage.Server.Authetication;
 using MemberShipManage.Server.Filters;
-using Microsoft.AspNetCore.Mvc;
-using MemberShipManage.Infrastructurer.Extension;
-using MemberShipManage.Shared.UserDTO;
-using System.Net.Http;
-using System.Net;
 using MemberShipManage.Service.UserSvc;
+using MemberShipManage.Shared;
+using MemberShipManage.Shared.UserDTO;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace MemberShipManage.Server.Controllers
 {
@@ -28,41 +28,44 @@ namespace MemberShipManage.Server.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage GenerateJwt()
+        public TokenResult GenerateJwt()
         {
             var userCreditSequence = Request.Headers["user_credit"].ToString();
-            var userCredit = userCreditSequence.DeserializeFromJson<UserCreditEntity>();
-            if (!userCredit.Equals(CustomSettings.AppSettings.ClientID))
+            var userCreditSequenceArray = userCreditSequence.Split(new char[] { ',' }).Select(u => u.Trim()).ToList();
+
+            var userCredit = new UserCreditEntity
             {
-                return new HttpResponseMessage
+                ClientID = userCreditSequenceArray[0],
+                UserNo = userCreditSequenceArray[1],
+                Password = userCreditSequenceArray[2]
+            };
+
+            if (!userCredit.ClientID.Equals(CustomSettings.AppSettings.ClientID))
+            {
+                return new TokenResult
                 {
-                    StatusCode = HttpStatusCode.Unauthorized,
-                    Content = new StringContent("user credit is invalid.")
+                    IsSuccess = false,
+                    ErrorMessage = "user credit is invalid."
                 };
             }
 
             var userGetRequest = new UserGetRequest
             {
                 UserNo = userCredit.UserNo,
-                Password = userCredit.Password
+                Password = new Cryptor().Decrypt(userCredit.Password.ToArray())
             };
 
             var user = userService.GetUser(userGetRequest);
             if (user == null)
             {
-                return new HttpResponseMessage
+                return new TokenResult
                 {
-                    StatusCode = HttpStatusCode.Unauthorized,
-                    Content = new StringContent("user credit is incorrect.")
+                    IsSuccess = false,
+                    ErrorMessage = "user credit is incorrect."
                 };
             }
 
-            var token = jwtTokenHelper.BuildAuthorizeToken(CustomSettings.AppSettings.ClientID, tokenOptions);
-            return new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(token.ToJson())
-            };
+            return jwtTokenHelper.BuildAuthorizeToken(CustomSettings.AppSettings.ClientID, tokenOptions);
         }
     }
 }

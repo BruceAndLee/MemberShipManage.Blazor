@@ -1,18 +1,20 @@
 ﻿@page  "/system/login"
 @using MemberShipManage.Shared.UserDTO
-@using MemberShipManage.Server.Models
 @using MemberShipManage.Infrastructurer
-@using MemberShipManage.Infrastructure.Extension
+@using System.Net
+@using MemberShipManage.Shared
+@using MemberShipManage.Infrastructure.Utility
 @using MemberShipManage.Infrastructurer.Extension
+@inherits MemberShipManage.Client.Pages.Common.ToastPage
 @inject HttpClient Http
-@inject ToastService ToastService
+@inject IJSRuntime JSRuntime
 
 <Card Color="Color.None" Class="ml-3  mt-2" style="width: 30rem;">
     <CardHeader>
         <b>会员登录</b>
     </CardHeader>
     <CardBody>
-        <EditForm EditContext="editContext" OnValidSubmit="onValidSubmit">
+        <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
             <div class="row">
                 <div class="col-md-3">
                     <label class="control-label">用户名：</label>
@@ -28,7 +30,7 @@
                     <label class="control-label">密码：</label>
                 </div>
                 <div class="col-md-8">
-                    <input type="text" @bind-value="userEntity.Password" class="form-control" placeholder="请输入密码" />
+                    <input type="password" @bind-value="userEntity.Password" class="form-control" placeholder="请输入密码" />
                     <ValidationMessage For="()=>userEntity.Password"></ValidationMessage>
                 </div>
             </div>
@@ -44,14 +46,14 @@
         </EditForm>
     </CardBody>
 </Card>
-
 @code {
+    private const string USER_CREDIT_HEADER = "user_credit";
     private UserEntity userEntity = new UserEntity();
     private EditContext editContext;
 
     protected override async Task OnInitializedAsync()
     {
-       editContext = new EditContext(userEntity);
+        editContext = new EditContext(userEntity);
     }
 
     private void OnCancelButtonClick(MouseEventArgs e)
@@ -59,30 +61,30 @@
 
     }
 
-    private async Task onValidSubmit()
+    private async Task OnValidSubmit()
     {
         var userGetUrl = string.Format(APIUrlDefination.USER_GET, userEntity.UserNo, userEntity.Password);
-        var user = await Http.GetFromJsonAsync<User>(userGetUrl);
+        var response = await Http.GetAsync(userGetUrl);
 
-        var userCredit = new UserCreditEntity
+        if (response.StatusCode == HttpStatusCode.NoContent)
         {
-            ClientID = "membership_19861017",
-            UserNo = userEntity.UserNo,
-            Password = userEntity.Password
-        };
+            ShowToast("用户名或者密码不正确！", "提示信息");
+            return;
+        }
 
-        Http.DefaultRequestHeaders.Add("user_credit", userCredit.ToJson());
+        var userCredit = await response.Content.ReadFromJsonAsync<UserCreditEntity>();
+        userCredit.ClientID = "membership_19861017";
 
-        await EnsureCondition.RunIf(user == null, async () =>
+        if (Http.DefaultRequestHeaders.Contains(USER_CREDIT_HEADER))
         {
-            await ToastService.Show(new ToastOption()
-            {
-                Category = ToastCategory.Information,
-                Title = "提示信息",
-                Content = "用户名或者密码不正确！"
-            });
-        }, async () => {
-            await Http.PostAsJsonAsync<UserEntity>(APIUrlDefination.TOKEN_GENERATE, userEntity);
-        });
+            Http.DefaultRequestHeaders.Remove(USER_CREDIT_HEADER);
+        }
+
+        Http.DefaultRequestHeaders.Add(USER_CREDIT_HEADER, new List<string> { userCredit.ClientID, userCredit.UserNo, userCredit.Password });
+
+        var tokenResult = await Http.PostAsync(APIUrlDefination.TOKEN_GENERATE, null);
+        var tokenEntity = tokenResult.Content.ReadFromJsonAsync<TokenResult>();
+        await JSRuntime.SetLocalStorage("login_user", tokenEntity.ToJson());
+        await JSRuntime.InvokeVoidAsync("refresh");
     }
 }

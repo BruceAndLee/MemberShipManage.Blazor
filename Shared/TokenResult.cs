@@ -1,11 +1,12 @@
-﻿using System;
+﻿using MemberShipManage.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MemberShipManage.Server.Authetication
+namespace MemberShipManage.Shared
 {
-    public class TokenResult
+    public class TokenResult : ProcessStatus
     {
         /// <summary>
         /// token字符串

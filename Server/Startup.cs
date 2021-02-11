@@ -171,7 +171,7 @@ namespace MemberShipManage.Server
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-            app.UseMiddleware<SystemExceptionHandleMiddleware>();
+            //app.UseMiddleware<SystemExceptionHandleMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

@@ -13,3 +13,7 @@ function SetSessionStorage(key, value) {
 function GetSessionStorage(key) {
     sessionStorage.getItem(key);
 }
+
+function refresh() {
+    window.location.href = window.location.href;
+}

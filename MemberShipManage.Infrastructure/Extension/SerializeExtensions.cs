@@ -19,7 +19,7 @@ namespace MemberShipManage.Infrastructurer.Extension
         /// <returns></returns>
         public static string ToJson(this object obj, bool ignoreNull = false)
         {
-            return JsonConvert.SerializeObject(obj, Formatting.None, new JsonSerializerSettings
+            return JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings
             {
                 DateFormatString = "yyyy-MM-dd HH:mm:ss",
                 NullValueHandling = ignoreNull ? NullValueHandling.Ignore : NullValueHandling.Include

@@ -1,4 +1,5 @@
-﻿using MemberShipManage.Repository.UserRep;
+﻿using MemberShipManage.Infrastructurer;
+using MemberShipManage.Repository.UserRep;
 using MemberShipManage.Server.Models;
 using MemberShipManage.Shared.UserDTO;
 using System;
@@ -19,7 +20,13 @@ namespace MemberShipManage.Service.UserSvc
 
         public User GetUser(UserGetRequest request)
         {
-            return respository.GetSingle(u => u.UserNo == request.UserNo && u.Password == request.Password);
+            var user = respository.GetSingle(u => u.UserNo == request.UserNo);
+            if (user != null && new Cryptor().Decrypt(user.Password.ToArray()) == request.Password)
+            {
+                return user;
+            }
+
+            return null;
         }
     }
 }
