@@ -3,10 +3,12 @@ using FluentValidation.AspNetCore;
 using MemberShipManage.Infrastructure.MiddleWare;
 using MemberShipManage.Infrastructurer;
 using MemberShipManage.Repository.CustomerRep;
+using MemberShipManage.Repository.UserRep;
 using MemberShipManage.Server.Authetication;
 using MemberShipManage.Server.Filters;
 using MemberShipManage.Server.Models;
 using MemberShipManage.Service.CustomerSvc;
+using MemberShipManage.Service.UserSvc;
 using MemberShipManage.Validations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -189,7 +191,9 @@ namespace MemberShipManage.Server
             builder.RegisterType<MembershipManageContext>().As<DbContext>().InstancePerLifetimeScope();
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
             builder.RegisterType<CustomerRepository>().As<ICustomerRepository>().InstancePerLifetimeScope();
+            builder.RegisterType<UserRepository>().As<IUserRepository>().InstancePerLifetimeScope();
             builder.RegisterType<CustomerService>().As<ICustomerService>().InstancePerLifetimeScope();
+            builder.RegisterType<UserService>().As<IUserService>().InstancePerLifetimeScope();
             builder.RegisterType<JwtTokenHelper>().InstancePerLifetimeScope();
         }
     }
