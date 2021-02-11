@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemberShipManage.Infrastructure.Extension
+namespace MemberShipManage.Infrastructurer.Extension
 {
     public static class SerializeExtensions
     {

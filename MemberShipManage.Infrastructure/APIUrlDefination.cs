@@ -14,5 +14,15 @@ namespace MemberShipManage.Infrastructurer
         public const string CUSTOMER_GET = "customer/get";
 
         #endregion
+
+        #region
+
+        public const string USER_GET = "user/get?userno={0}&password={1}";
+
+        #endregion
+
+        #region token
+        public const string TOKEN_GENERATE = "tokengenerate/generatejwt";
+        #endregion
     }
 }

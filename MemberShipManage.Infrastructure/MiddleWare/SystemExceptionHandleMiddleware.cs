@@ -2,7 +2,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using MemberShipManage.Infrastructure.Extension;
+using MemberShipManage.Infrastructurer.Extension;
 
 namespace MemberShipManage.Infrastructure.MiddleWare
 {

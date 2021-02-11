@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemberShipManage.Infrastructure.Extension
+namespace MemberShipManage.Infrastructurer.Extension
 {
     public static class EncryptExtensions
     {

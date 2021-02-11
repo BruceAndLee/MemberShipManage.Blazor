@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MemberShipManage.Server.Filters
 {
-    public class AuthorizationFilter : ActionFilterAttribute
+    public class UserCreditFilter : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {

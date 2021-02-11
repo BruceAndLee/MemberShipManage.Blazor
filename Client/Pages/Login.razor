@@ -1,5 +1,12 @@
 ﻿@page  "/system/login"
 @using MemberShipManage.Shared.UserDTO
+@using MemberShipManage.Server.Models
+@using MemberShipManage.Infrastructurer
+@using MemberShipManage.Infrastructure.Extension
+@using MemberShipManage.Infrastructurer.Extension
+@inject HttpClient Http
+@inject ToastService ToastService
+
 <Card Color="Color.None" Class="ml-3  mt-2" style="width: 30rem;">
     <CardHeader>
         <b>会员登录</b>
@@ -11,8 +18,8 @@
                     <label class="control-label">用户名：</label>
                 </div>
                 <div class="col-md-8">
-                    <input type="text" @bind-value="@user.UserNo" class="form-control" placeholder="请输入用户名" />
-                    <ValidationMessage For="()=>user.UserNo"></ValidationMessage>
+                    <input type="text" @bind-value="@userEntity.UserNo" class="form-control" placeholder="请输入用户名" />
+                    <ValidationMessage For="()=>userEntity.UserNo"></ValidationMessage>
                 </div>
             </div>
             <div class="margin-t10"></div>
@@ -21,15 +28,15 @@
                     <label class="control-label">密码：</label>
                 </div>
                 <div class="col-md-8">
-                    <input type="text" @bind-value="user.Password" class="form-control" placeholder="请输入密码" />
-                    <ValidationMessage For="()=>user.Password"></ValidationMessage>
+                    <input type="text" @bind-value="userEntity.Password" class="form-control" placeholder="请输入密码" />
+                    <ValidationMessage For="()=>userEntity.Password"></ValidationMessage>
                 </div>
             </div>
             <div class="margin-t10"></div>
             <div class="row">
                 <div class="col-md-3"></div>
                 <div class="col-md-8">
-                    <Button ButtonType="ButtonType.Submit" @onclick="@OnLoginButtonClick" Color="Color.Primary">登录</Button>
+                    <Button ButtonType="ButtonType.Submit" Color="Color.Primary">登录</Button>
                     <Button @onclick="@OnCancelButtonClick" Color="Color.Primary">取消</Button>
                 </div>
             </div>
@@ -39,17 +46,12 @@
 </Card>
 
 @code {
-    private UserEntity user = new UserEntity();
+    private UserEntity userEntity = new UserEntity();
     private EditContext editContext;
 
     protected override async Task OnInitializedAsync()
     {
-        editContext = new EditContext(user);
-    }
-
-    private void OnLoginButtonClick(MouseEventArgs e)
-    {
-
+        editContext = new EditContext(userEntity);
     }
 
     private void OnCancelButtonClick(MouseEventArgs e)
@@ -58,5 +60,29 @@
     }
 
     private async Task onValidSubmit()
-    { }
+    {
+        var userGetUrl = string.Format(APIUrlDefination.USER_GET, userEntity.UserNo, userEntity.Password);
+        var user = await Http.GetFromJsonAsync<User>(userGetUrl);
+
+        var userCredit = new UserCreditEntity
+        {
+            ClientID = CustomSettings.AppSettings.ClientID,
+            UserNo = userEntity.UserNo,
+            Password = userEntity.Password
+        };
+
+        Http.DefaultRequestHeaders.Add("user_credit", userCredit.ToJson());
+
+        await EnsureCondition.RunIf(user == null, async () =>
+        {
+            await ToastService.Show(new ToastOption()
+            {
+                Category = ToastCategory.Information,
+                Title = "提示信息",
+                Content = "用户名或者密码不正确！"
+            });
+        }, async () => {
+            await Http.PostAsJsonAsync<UserEntity>(APIUrlDefination.TOKEN_GENERATE, userEntity);
+        });
+    }
 }
