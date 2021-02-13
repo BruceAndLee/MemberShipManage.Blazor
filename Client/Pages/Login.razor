@@ -1,13 +1,15 @@
 ﻿@page  "/system/login"
+@layout LoginLayout
 @using MemberShipManage.Shared.UserDTO
 @using MemberShipManage.Infrastructurer
 @using System.Net
 @using MemberShipManage.Shared
 @using MemberShipManage.Infrastructure.Utility
 @using MemberShipManage.Infrastructurer.Extension
-@inherits MemberShipManage.Client.Pages.Common.ToastPage
+
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
 <Card Color="Color.None" Class="ml-3  mt-2" style="width: 30rem;">
     <CardHeader>
@@ -39,7 +41,7 @@
                 <div class="col-md-3"></div>
                 <div class="col-md-8">
                     <Button ButtonType="ButtonType.Submit" Color="Color.Primary">登录</Button>
-                    <Button @onclick="@OnCancelButtonClick" Color="Color.Primary">取消</Button>
+                    <Button @onclick="@OnCancelButtonClick" Color="Color.Warning">取消</Button>
                 </div>
             </div>
             <DataAnnotationsValidator />
@@ -58,7 +60,8 @@
 
     private void OnCancelButtonClick(MouseEventArgs e)
     {
-
+        userEntity.UserNo = string.Empty;
+        userEntity.Password = string.Empty;
     }
 
     private async Task OnValidSubmit()
@@ -68,11 +71,13 @@
 
         if (response.StatusCode == HttpStatusCode.NoContent)
         {
-            ShowToast("用户名或者密码不正确！", "提示信息");
+
+            await JSRuntime.ShowError("用户名或者密码不正确！");
             return;
         }
 
         var userCredit = await response.Content.ReadFromJsonAsync<UserCreditEntity>();
+        await JSRuntime.SetLocalStorage("login_user", userCredit.ToJson());
         userCredit.ClientID = "membership_19861017";
 
         if (Http.DefaultRequestHeaders.Contains(USER_CREDIT_HEADER))
@@ -82,9 +87,18 @@
 
         Http.DefaultRequestHeaders.Add(USER_CREDIT_HEADER, new List<string> { userCredit.ClientID, userCredit.UserNo, userCredit.Password });
 
-        var tokenResult = await Http.PostAsync(APIUrlDefination.TOKEN_GENERATE, null);
-        var tokenEntity = tokenResult.Content.ReadFromJsonAsync<TokenResult>();
-        await JSRuntime.SetLocalStorage("login_user", tokenEntity.ToJson());
-        await JSRuntime.InvokeVoidAsync("refresh");
+        try
+        {
+            var tokenResult = await Http.PostAsync(APIUrlDefination.TOKEN_GENERATE, null);
+            var tokenEntity = tokenResult.Content.ReadFromJsonAsync<TokenResult>();
+            await JSRuntime.SetLocalStorage("access_token", tokenEntity.ToJson());
+        }
+        catch
+        {
+            await JSRuntime.ShowError("用户授权认证失败！");
+            return;
+        }
+
+        NavigationManager.NavigateTo("/");
     }
 }

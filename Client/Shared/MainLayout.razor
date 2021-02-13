@@ -1,61 +1,69 @@
 ﻿@inherits LayoutComponentBase
 @using BootstrapBlazor.Components
 @using MemberShipManage.Infrastructure.Utility
-@using MemberShipManage.Client.Pages
+@using MemberShipManage.Infrastructurer.Extension
+@using MemberShipManage.Shared.UserDTO
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
-@if (currentUser == null)
-{
-
-    <div id="main_layout">
-        <Layout>
-            <Main>
-                <Login></Login></Main>
-        </Layout>
-    </div>
-}
-else
-{
-    <div style="width: 100%; height: 700px; border: 0px solid rgba(0,0,0,.125);">
-        <Layout ShowFooter="true" SideWidth="200px">
-            <Header>
-                <div class="d-flex justify-content-center align-items-center" style="height: 50px; color: #fff; margin: 0 -1px;">
-                    <div class="col-md-5 website-title" style="text-align: left">
-                        <img src="images/member.png" width="50" height="50" />
-                        <a href="/" style="color:white">渔人杰餐厅会员管理系统</a>
-                    </div>
+<div style="width: 100%; height: 700px; border: 0px solid rgba(0,0,0,.125);">
+    <Layout ShowFooter="true" SideWidth="200px">
+        <Header>
+            <div class="d-flex justify-content-center align-items-center" style="height: 50px; color: #fff; margin: 0 -1px;">
+                <div class="col-md-5 website-title" style="text-align: left">
+                    <img src="images/member.png" width="50" height="50" />
+                    <a href="/" style="color:white">渔人杰餐厅会员管理系统</a>
+                </div>
+                @if (currentUser != null)
+                {
                     <div id="logout" class="col-md-7" style="text-align: right; font-size: large">
 
                         <img id="img_UserPhoto" class="round-image" src="images/users.jpg" />
                         <span style="margin-right: 10px">
-                            当前用户：李磊
+                            当前用户：@currentUser.UserNo
                         </span>
                         <span id="currentTime">@dateNow.ToString("yyyy-MM-dd HH:mm:ss")</span>&nbsp;&nbsp;
                         <a href="">注销</a>
                     </div>
-                </div>
-            </Header>
-            <Side>
-                <NavMenu></NavMenu>
-            </Side>
-            <Main>
-                <div style="padding: 1rem;">@Body</div>
-            </Main>
-            <Footer>
-                <div class="d-flex justify-content-center align-items-center" style="height: 30px; color: #fff; background-color: #5b6e84; margin: 0 -1px;">Footer</div>
-            </Footer>
-        </Layout>
-    </div>
-}
+
+                }
+            </div>
+        </Header>
+        <Side>
+            <NavMenu></NavMenu>
+        </Side>
+        <Main>
+            <div style="padding: 1rem;">@Body</div>
+        </Main>
+        <Footer>
+            <div class="d-flex justify-content-center align-items-center" style="height: 30px; color: #fff; background-color: #5b6e84; margin: 0 -1px;">Footer</div>
+        </Footer>
+    </Layout>
+</div>
 
 @code {
     private DateTime dateNow = DateTime.Now;
-    private string currentUser;
-
+    private UserCreditEntity currentUser;
 
     protected async override void OnInitialized()
     {
-        currentUser = await JSRuntime.GetLocalStorage("login_user");
+        var userJson = await JSRuntime.GetLocalStorage("login_user");
+        try
+        {
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                currentUser = userJson.DeserializeFromJson<UserCreditEntity>();
+            }
+        }
+        catch
+        {
+        }
+
+        if (currentUser == null)
+        {
+            NavigationManager.NavigateTo("/system/login", false);
+        }
+
         var timer = new System.Threading.Timer((_) =>
         {
             dateNow = DateTime.Now;

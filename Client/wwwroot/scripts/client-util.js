@@ -3,7 +3,7 @@
 }
 
 function GetLocalStorage(key) {
-    localStorage.getItem(key);
+    return localStorage.getItem(key);
 }
 
 function SetSessionStorage(key, value) {
@@ -11,7 +11,7 @@ function SetSessionStorage(key, value) {
 }
 
 function GetSessionStorage(key) {
-    sessionStorage.getItem(key);
+    return sessionStorage.getItem(key);
 }
 
 function refresh() {
