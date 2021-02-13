@@ -1,0 +1,114 @@
+﻿@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@using System.Net;
+@using MemberShipManage.Infrastructurer.Extension
+
+@code {
+
+    #region Post
+    public HttpResponseMessage Post(string url, HttpContent content)
+    {
+        var response = Http.PostAsync(url, content).Result;
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            Navigation.NavigateTo("/system/login");
+        }
+
+        return response;
+    }
+
+    public HttpResponseMessage PostAsJson<T>(string url, T request) where T : class, new()
+    {
+        var response = Http.PostAsJsonAsync<T>(url, request).Result;
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            Navigation.NavigateTo("/system/login");
+        }
+
+        return response;
+    }
+
+    public HttpResponseMessage PostWithHeader(
+         string url
+        , HttpContent content
+        , Dictionary<string, IEnumerable<string>> headerKeyValues = null
+        , bool forceUpdate = false)
+    {
+        ProcessHeaders(headerKeyValues, forceUpdate);
+        var response = Http.PostAsync(url, content).Result;
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            Navigation.NavigateTo("/system/login");
+        }
+
+        return response;
+    }
+
+    #endregion
+
+    #region Put
+
+    public HttpResponseMessage Put(string url, HttpContent content)
+    {
+        var response = Http.PutAsync(url, content).Result;
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            Navigation.NavigateTo("/system/login");
+        }
+
+        return response;
+    }
+
+    public HttpResponseMessage PutAsJson<T>(string url, T request) where T : class, new()
+    {
+        var response = Http.PutAsJsonAsync<T>(url, request).Result;
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            Navigation.NavigateTo("/system/login");
+        }
+
+        return response;
+    }
+
+    public HttpResponseMessage PutWithHeader(
+        string url
+        , HttpContent content
+        , Dictionary<string, IEnumerable<string>> headerKeyValues = null
+        , bool forceUpdate = false)
+    {
+        ProcessHeaders(headerKeyValues, forceUpdate);
+        var response = Http.PutAsync(url, content).Result;
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            Navigation.NavigateTo("/system/login");
+        }
+
+        return response;
+    }
+
+    #endregion
+
+    private void ProcessHeaders(
+    Dictionary<string, IEnumerable<string>> headerKeyValues = null
+    , bool forceUpdate = false)
+    {
+        if (headerKeyValues != null && headerKeyValues.Count > 0)
+        {
+            foreach (KeyValuePair<string, IEnumerable<string>> header in headerKeyValues)
+            {
+                EnsureCondition.RunIf(Http.DefaultRequestHeaders.Contains(header.Key), () =>
+                {
+                    if (forceUpdate)
+                    {
+                        Http.DefaultRequestHeaders.Remove(header.Key);
+                        Http.DefaultRequestHeaders.Add(header.Key, header.Value);
+                    }
+                }, () =>
+                {
+                    Http.DefaultRequestHeaders.Add(header.Key, header.Value);
+                });
+            }
+        }
+    }
+}

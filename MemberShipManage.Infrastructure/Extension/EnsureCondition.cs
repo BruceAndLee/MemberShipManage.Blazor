@@ -14,6 +14,18 @@ namespace MemberShipManage.Infrastructurer.Extension
             }
         }
 
+        public static void RunIf(bool condition, Action matchAction, Action unMatchAction)
+        {
+            if (condition)
+            {
+                matchAction?.Invoke();
+            }
+            else
+            {
+                unMatchAction?.Invoke();
+            }
+        }
+
         public static T RunIf<T>(bool condition, Func<T> actionTrue, Func<T> actionFalse)
         {
             if (condition)

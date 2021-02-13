@@ -2,10 +2,13 @@
 @using MemberShipManage.Shared.CustomerDTO
 @using MemberShipManage.Infrastructurer
 @using MemberShipManage.Infrastructure.Utility
+@using MemberShipManage.Server.Models;
+
+@inherits MemberShipManage.Client.Pages.Common.BaseComponent
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
 
-<EditForm EditContext="editContext" OnValidSubmit="onValidSubmit" OnInvalidSubmit="onInvalidSubmit">
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
     <div id="customer" class="margin-t10">
         <GroupBox Title="创建会员">
             <div class="row">
@@ -76,22 +79,26 @@
 
 @code {
 
-    private List<MemberShipManage.Server.Models.Customer> customerList = new List<MemberShipManage.Server.Models.Customer>();
+    private List<Customer> customerList = new List<Customer>();
     private CustomerCreateRequest customer = new CustomerCreateRequest();
     private EditContext editContext;
 
     protected override async Task OnInitializedAsync()
     {
         editContext = new EditContext(customer);
-        customerList = await Http.GetFromJsonAsync<List<MemberShipManage.Server.Models.Customer>>(APIUrlDefination.CUSTOMER_GET_ALL);
+        customerList = await Http.GetFromJsonAsync<List<Customer>>(APIUrlDefination.CUSTOMER_GET_ALL);
         await JSRuntime.SetLocalStorage("customers", Newtonsoft.Json.JsonConvert.SerializeObject(customerList));
     }
 
-    private void onValidSubmit()
+    private async void OnValidSubmit()
     {
-        this.Http.PostAsJsonAsync<CustomerCreateRequest>(APIUrlDefination.CUSTOMER_CREATE, customer);
+        var response = PostAsJson<CustomerCreateRequest>(APIUrlDefination.CUSTOMER_CREATE, customer);
+        if (response.IsSuccessStatusCode)
+        {
+           await JSRuntime.ShowSuccess("创建成功！");
+        }
     }
-    private void onInvalidSubmit()
+    private void OnInvalidSubmit()
     {
 
     }
