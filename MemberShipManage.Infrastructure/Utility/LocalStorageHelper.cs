@@ -21,7 +21,7 @@ namespace MemberShipManage.Infrastructure.Utility
 
         public static async Task RemoveLocalStorage(this IJSRuntime _jsRuntime, string key)
         {
-            await _jsRuntime.InvokeAsync<string>("RemoveLocalStorage", key);
+            await _jsRuntime.InvokeVoidAsync("RemoveLocalStorage", key);
         }
 
         public static async Task SetSessionStorage(this IJSRuntime _jsRuntime, string key, string value)
@@ -36,7 +36,7 @@ namespace MemberShipManage.Infrastructure.Utility
 
         public static async Task RemoveSessionStorage(this IJSRuntime _jsRuntime, string key)
         {
-            await _jsRuntime.InvokeAsync<string>("RemoveSessionStorage", key);
+            await _jsRuntime.InvokeVoidAsync("RemoveSessionStorage", key);
         }
     }
 }

@@ -29,6 +29,7 @@ namespace MemberShipManage.Server.Controllers
             return customerService.GetCustomerList();
         }
 
+        [Authorize]
         [HttpPost("create")]
         public HttpResponseMessage CreateCustomer([FromBody]CustomerCreateRequest customerRequest)
         {
