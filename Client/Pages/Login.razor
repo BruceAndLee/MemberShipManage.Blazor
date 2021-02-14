@@ -90,7 +90,13 @@
         try
         {
             var tokenResult = await Http.PostAsync(APIUrlDefination.TOKEN_GENERATE, null);
-            var tokenEntity = tokenResult.Content.ReadFromJsonAsync<TokenResult>();
+            var tokenEntity = await tokenResult.Content.ReadFromJsonAsync<TokenResult>();
+            if (!tokenEntity.IsSuccess)
+            {
+                await JSRuntime.ShowError("用户授权认证失败！");
+                return;
+            }
+
             await JSRuntime.SetLocalStorage("access_token", tokenEntity.ToJson());
         }
         catch
