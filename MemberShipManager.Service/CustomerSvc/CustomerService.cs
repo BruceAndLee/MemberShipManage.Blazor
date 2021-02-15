@@ -35,13 +35,16 @@ namespace MemberShipManage.Service.CustomerSvc
         public void CreateCustomer(Customer customer)
         {
             customer.InDate = DateTime.Now;
+            customer.Status = true;
             customer.Password = new Cryptor().Encrypt(customer.Password.ToArray());
             respository.Add(customer);
+            respository.SaveChanges();
         }
 
         public void UpdateCustomer(Customer customer)
         {
             respository.Update(customer);
+            respository.SaveChanges();
         }
 
         public CustomerGetResponse GetCustomerList(CustomerGetRequest request)

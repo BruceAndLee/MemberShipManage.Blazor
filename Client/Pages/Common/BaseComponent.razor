@@ -12,13 +12,13 @@
     #region Post
     public async Task<HttpResponseMessage> Post(string url, HttpContent content)
     {
-        AppendAuthorization();
+        await AppendAuthorization();
         return await Http.PostAsync(url, content);
     }
 
     public async Task<HttpResponseMessage> PostAsJson<T>(string url, T request) where T : class, new()
     {
-        AppendAuthorization();
+        await AppendAuthorization();
         return await Http.PostAsJsonAsync<T>(url, request);
     }
 
@@ -28,7 +28,7 @@
         , Dictionary<string, IEnumerable<string>> headerKeyValues = null
         , bool forceUpdate = false)
     {
-        AppendAuthorization();
+        await AppendAuthorization();
         ProcessHeaders(headerKeyValues, forceUpdate);
         return await Http.PostAsync(url, content);
     }
@@ -39,13 +39,13 @@
 
     public async Task<HttpResponseMessage> Put(string url, HttpContent content)
     {
-        AppendAuthorization();
+        await AppendAuthorization();
         return await Http.PutAsync(url, content);
     }
 
     public async Task<HttpResponseMessage> PutAsJson<T>(string url, T request) where T : class, new()
     {
-        AppendAuthorization();
+        await AppendAuthorization();
         return await Http.PutAsJsonAsync<T>(url, request);
     }
 
@@ -55,7 +55,7 @@
         , Dictionary<string, IEnumerable<string>> headerKeyValues = null
         , bool forceUpdate = false)
     {
-        AppendAuthorization();
+        await AppendAuthorization();
         ProcessHeaders(headerKeyValues, forceUpdate);
         return await Http.PutAsync(url, content);
     }
@@ -98,7 +98,7 @@
             });
     }
 
-    private async void AppendAuthorization()
+    private async Task AppendAuthorization()
     {
         var token = await JSRuntime.GetLocalStorage("access_token");
         if (!string.IsNullOrEmpty(token))
