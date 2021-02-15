@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MemberShipManage.Infrastructurer;
 using MemberShipManage.Infrastructurer.Pagination;
 using MemberShipManage.Repository.CustomerRep;
 using MemberShipManage.Server.Models;
@@ -26,9 +27,15 @@ namespace MemberShipManage.Service.CustomerSvc
             return respository.Get(c => c.Id == customerId).FirstOrDefault();
         }
 
+        public Customer GetCustomerByUserNo(string userNo)
+        {
+            return respository.Get(c => c.UserNo== userNo).FirstOrDefault();
+        }
+
         public void CreateCustomer(Customer customer)
         {
             customer.InDate = DateTime.Now;
+            customer.Password = new Cryptor().Encrypt(customer.Password.ToArray());
             respository.Add(customer);
         }
 

@@ -30,7 +30,8 @@ namespace MemberShipManage.Server.Authetication
             return new TokenResult()
             {
                 Access_token = "Bearer " + securityToken,
-                Expires_in = _tokenOptions.Expire
+                Expires_in = _tokenOptions.Expire,
+                IsSuccess = true
             };
         }
     }

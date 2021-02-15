@@ -1,90 +1,63 @@
 ﻿@inject HttpClient Http
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
-@using System.Net;
+@using MemberShipManage.Infrastructure.Utility
+@using System.Net
 @using MemberShipManage.Infrastructurer.Extension
 
 @code {
 
+    private const string USER_Auth_KEY = "Authorization";
+    protected const string CLIENT_ID = "membership_19861017";
     #region Post
-    public HttpResponseMessage Post(string url, HttpContent content)
+    public async Task<HttpResponseMessage> Post(string url, HttpContent content)
     {
-        var response = Http.PostAsync(url, content).Result;
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            Navigation.NavigateTo("/system/login");
-        }
-
-        return response;
+        AppendAuthorization();
+        return await Http.PostAsync(url, content);
     }
 
-    public HttpResponseMessage PostAsJson<T>(string url, T request) where T : class, new()
+    public async Task<HttpResponseMessage> PostAsJson<T>(string url, T request) where T : class, new()
     {
-        var response = Http.PostAsJsonAsync<T>(url, request).Result;
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            Navigation.NavigateTo("/system/login");
-        }
-
-        return response;
+        AppendAuthorization();
+        return await Http.PostAsJsonAsync<T>(url, request);
     }
 
-    public HttpResponseMessage PostWithHeader(
+    public async Task<HttpResponseMessage> PostWithHeader(
          string url
         , HttpContent content
         , Dictionary<string, IEnumerable<string>> headerKeyValues = null
         , bool forceUpdate = false)
     {
+        AppendAuthorization();
         ProcessHeaders(headerKeyValues, forceUpdate);
-        var response = Http.PostAsync(url, content).Result;
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            Navigation.NavigateTo("/system/login");
-        }
-
-        return response;
+        return await Http.PostAsync(url, content);
     }
 
     #endregion
 
     #region Put
 
-    public HttpResponseMessage Put(string url, HttpContent content)
+    public async Task<HttpResponseMessage> Put(string url, HttpContent content)
     {
-        var response = Http.PutAsync(url, content).Result;
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            Navigation.NavigateTo("/system/login");
-        }
-
-        return response;
+        AppendAuthorization();
+        return await Http.PutAsync(url, content);
     }
 
-    public HttpResponseMessage PutAsJson<T>(string url, T request) where T : class, new()
+    public async Task<HttpResponseMessage> PutAsJson<T>(string url, T request) where T : class, new()
     {
-        var response = Http.PutAsJsonAsync<T>(url, request).Result;
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            Navigation.NavigateTo("/system/login");
-        }
-
-        return response;
+        AppendAuthorization();
+        return await Http.PutAsJsonAsync<T>(url, request);
     }
 
-    public HttpResponseMessage PutWithHeader(
+    public async Task<HttpResponseMessage> PutWithHeader(
         string url
         , HttpContent content
         , Dictionary<string, IEnumerable<string>> headerKeyValues = null
         , bool forceUpdate = false)
     {
+        AppendAuthorization();
         ProcessHeaders(headerKeyValues, forceUpdate);
-        var response = Http.PutAsync(url, content).Result;
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            Navigation.NavigateTo("/system/login");
-        }
-
-        return response;
+        return await Http.PutAsync(url, content);
     }
 
     #endregion
@@ -109,6 +82,31 @@
                     Http.DefaultRequestHeaders.Add(header.Key, header.Value);
                 });
             }
+        }
+    }
+
+    protected void CheckAuthorization(HttpResponseMessage response, Action action = null)
+    {
+        EnsureCondition.RunIf(response.StatusCode == HttpStatusCode.Unauthorized
+            , () =>
+            {
+                Navigation.NavigateTo("/system/login");
+            }
+            , () =>
+            {
+                action?.Invoke();
+            });
+    }
+
+    private async void AppendAuthorization()
+    {
+        var token = await JSRuntime.GetLocalStorage("access_token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            var tokenResult = token.DeserializeFromJson<MemberShipManage.Shared.TokenResult>();
+            var tokenDictionary = new Dictionary<string, IEnumerable<string>>();
+            tokenDictionary.Add(USER_Auth_KEY, new List<string> { tokenResult?.Access_token });
+            ProcessHeaders(tokenDictionary);
         }
     }
 }

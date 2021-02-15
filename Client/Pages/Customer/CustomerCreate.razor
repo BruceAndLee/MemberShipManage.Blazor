@@ -2,8 +2,9 @@
 @using MemberShipManage.Shared.CustomerDTO
 @using MemberShipManage.Infrastructurer
 @using MemberShipManage.Infrastructure.Utility
-@using MemberShipManage.Server.Models;
-
+@using MemberShipManage.Server.Models
+@using System.Net
+@using MemberShipManage.Infrastructurer.Extension
 @inherits MemberShipManage.Client.Pages.Common.BaseComponent
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
@@ -92,11 +93,21 @@
 
     private async void OnValidSubmit()
     {
-        var response = PostAsJson<CustomerCreateRequest>(APIUrlDefination.CUSTOMER_CREATE, customer);
+        var response = await PostAsJson<CustomerCreateRequest>(APIUrlDefination.CUSTOMER_CREATE, customer);
         if (response.IsSuccessStatusCode)
         {
-           await JSRuntime.ShowSuccess("创建成功！");
+            await JSRuntime.ShowSuccess("创建成功！");
+            return;
         }
+
+        CheckAuthorization(response, () =>
+        {
+            EnsureCondition.RunIf(response.StatusCode == HttpStatusCode.Conflict
+                , async () =>
+                {
+                    await JSRuntime.ShowError(await response.Content.ReadAsStringAsync());
+                });
+        });
     }
     private void OnInvalidSubmit()
     {

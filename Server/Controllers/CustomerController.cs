@@ -31,9 +31,18 @@ namespace MemberShipManage.Server.Controllers
 
         [Authorize]
         [HttpPost("create")]
-        public HttpResponseMessage CreateCustomer([FromBody]CustomerCreateRequest customerRequest)
+        public HttpResponseMessage CreateCustomer([FromBody] CustomerCreateRequest customerRequest)
         {
             var customer = mapper.Map<Customer>(customerRequest);
+            var customerDB = customerService.GetCustomerByUserNo(customerRequest.UserNo);
+            if (customerDB != null)
+            {
+                return new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.Conflict,
+                    Content = new StringContent("用户名已存在！")
+                };
+            }
             customerService.CreateCustomer(customer);
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -51,7 +60,7 @@ namespace MemberShipManage.Server.Controllers
         }
 
         [HttpGet("get")]
-        public CustomerGetResponse GetCustomerList([FromQuery]CustomerGetRequest request)
+        public CustomerGetResponse GetCustomerList([FromQuery] CustomerGetRequest request)
         {
             return customerService.GetCustomerList(request);
         }
