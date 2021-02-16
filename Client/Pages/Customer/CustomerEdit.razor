@@ -1,6 +1,9 @@
 ﻿@using MemberShipManage.Shared.CustomerDTO
 @using MemberShipManage.Infrastructurer
 @using MemberShipManage.Infrastructure.Utility
+@using MemberShipManage.Infrastructurer.Extension
+@using System.Net
+@inherits MemberShipManage.Client.Pages.Common.BaseComponent
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
 <EditForm EditContext="editContext" OnValidSubmit="onValidSubmit" OnInvalidSubmit="onInvalidSubmit">
@@ -76,11 +79,15 @@
 
     private async Task onValidSubmit()
     {
-        var result = await this.Http.PutAsJsonAsync<CustomerUpdateRequest>(APIUrlDefination.CUSTOMER_UPDATE, CustomerUpdateRequest);
-        if (result.IsSuccessStatusCode)
+        var response = await PutAsJson<CustomerUpdateRequest>(APIUrlDefination.CUSTOMER_UPDATE, CustomerUpdateRequest);
+        CheckAuthorization(response, () =>
         {
-            await JSRuntime.ShowSuccess("修改成功！");
-        }
+            EnsureCondition.RunIf(response.IsSuccessStatusCode
+                , async () =>
+                {
+                    await JSRuntime.ShowSuccess("修改成功！");
+                });
+        });
     }
 
     private void onInvalidSubmit()
