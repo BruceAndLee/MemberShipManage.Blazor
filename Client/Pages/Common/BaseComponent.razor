@@ -88,8 +88,10 @@
     protected void CheckAuthorization(HttpResponseMessage response, Action action = null)
     {
         EnsureCondition.RunIf(response.StatusCode == HttpStatusCode.Unauthorized
-            , () =>
+            , async() =>
             {
+                await JSRuntime.RemoveLocalStorage("login_user");
+                await JSRuntime.RemoveLocalStorage("access_token");
                 Navigation.NavigateTo("/system/login");
             }
             , () =>
