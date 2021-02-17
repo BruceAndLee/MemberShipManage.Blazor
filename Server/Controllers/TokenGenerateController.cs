@@ -13,12 +13,12 @@ namespace MemberShipManage.Server.Controllers
     [ApiController]
     [UserCreditFilter]
     [Route("[controller]/[action]")]
-    public class TokenGenerateController : Controller
+    public class JWTTokenController : Controller
     {
         private readonly JWTTokenOptions tokenOptions;
         private readonly JwtTokenHelper jwtTokenHelper;
         private readonly IUserService userService;
-        public TokenGenerateController(JWTTokenOptions tokenOptions
+        public JWTTokenController(JWTTokenOptions tokenOptions
             , JwtTokenHelper jwtTokenHelper
             , IUserService userService)
         {
@@ -28,7 +28,7 @@ namespace MemberShipManage.Server.Controllers
         }
 
         [HttpPost]
-        public TokenResult GenerateJwt()
+        public TokenResult Generate()
         {
             var userCreditSequence = Request.Headers["user_credit"].ToString();
             var userCreditSequenceArray = userCreditSequence.Split(new char[] { ',' }).Select(u => u.Trim()).ToList();

@@ -22,7 +22,7 @@ namespace MemberShipManage.Infrastructurer
         #endregion
 
         #region token
-        public const string TOKEN_GENERATE = "tokengenerate/generatejwt";
+        public const string TOKEN_GENERATE = "jwttoken/generate";
         #endregion
     }
 }

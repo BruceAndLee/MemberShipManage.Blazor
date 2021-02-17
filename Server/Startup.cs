@@ -92,7 +92,7 @@ namespace MemberShipManage.Server
                     }
                 });
 
-                c.OperationFilter<AuthTokenHeaderFilter>();
+                //c.OperationFilter<AuthTokenHeaderFilter>();
             });
 
             JWTTokenOptions JWTTokenOptions = new JWTTokenOptions();
