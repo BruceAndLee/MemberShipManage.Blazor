@@ -41,7 +41,7 @@ namespace MemberShipManage.Server.ServiceFind
                 {
                     DeregisterCriticalServiceAfter = TimeSpan.FromMinutes(1),
                     Interval = TimeSpan.FromSeconds(30),
-                    HTTP = new Uri(address).OriginalString
+                    HTTP = new Uri(new Uri(address), "HealthCheck").OriginalString
                 };
 
                 var registration = new AgentServiceRegistration()

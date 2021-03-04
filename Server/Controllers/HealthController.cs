@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ConsulServiceFind
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class HealthCheckController : ControllerBase
     {
