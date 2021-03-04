@@ -1,30 +1,19 @@
 {
   "ReRoutes": [
     {
+      "UseServiceDiscovery": true, //是否使用服务发现
       "DownstreamPathTemplate": "/customer/{url}", //服务地址-url变量
       "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/consul/{url}", //网关地址-url变量
+      "UpstreamPathTemplate": "/mambership/{url}", //网关地址-url变量
       "UpstreamHttpMethod": [ "Get", "Post" ],
       "ServiceName": "CustomerService", //Consul服务名称
-      "LoadBalancerOptions": {
-        "Type": "RoundRobin" //轮询-LeastConnection-最少连接数的服务器-NoLoadBalance不负载均衡
-      },
-      "UseServiceDiscovery": true //是否使用服务发现
-    },
-    {
-      "DownstreamPathTemplate": "/customer/{url}", //服务地址-url变量
-      "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/consul/{url}", //网关地址-url变量
-      "UpstreamHttpMethod": [ "Get", "Post" ],
-      "ServiceName": "UserService", //Consul服务名称
-      "LoadBalancerOptions": {
-        "Type": "RoundRobin" //轮询-LeastConnection-最少连接数的服务器-NoLoadBalance不负载均衡
-      },
-      "UseServiceDiscovery": true //是否使用服务发现
+      //"LoadBalancerOptions": {
+      //  "Type": "RoundRobin" //轮询-LeastConnection-最少连接数的服务器-NoLoadBalance不负载均衡
+      //},
+      "ReRoutesCaseSensitive": false
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:9555", //网关对外地址
     "ServiceDiscoveryProvider": {
       "Scheme": "http",
       "Host": "localhost",

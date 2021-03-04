@@ -32,8 +32,6 @@ namespace MemberShipManage.Server.ServiceFind
             if (!(app.Properties["server.Features"] is FeatureCollection features)) return app;
 
             var serverFeatures = features.Get<IServerAddressesFeature>();
-            //--var address = serverFeatures.Addresses.First();
-
             foreach (var address in serverFeatures.Addresses)
             {
                 var uri = new Uri(address);
