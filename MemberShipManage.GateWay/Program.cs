@@ -1,10 +1,13 @@
-﻿using Autofac.Extensions.DependencyInjection;
-using MemberShipManage.Infrastructure.Extension;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace MemberShipManage.Server
+namespace MemberShipManage.GateWay
 {
     public class Program
     {
@@ -15,15 +18,12 @@ namespace MemberShipManage.Server
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                }).ConfigureLogging((context, LoggingBuilder) =>//ILogger
+                }).ConfigureAppConfiguration(cfg =>
                 {
-                    LoggingBuilder.AddFilter("System", LogLevel.Warning); // 忽略系统的其他日志
-                    LoggingBuilder.AddFilter("Microsoft", LogLevel.Warning);
-
-                }).UseLog4Net();
+                    cfg.AddJsonFile("configuration.json", optional: false, reloadOnChange: true);
+                });
     }
 }

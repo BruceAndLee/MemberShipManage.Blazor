@@ -24,6 +24,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Consul;
+using MemberShipManage.Server.ServiceFind;
+using Microsoft.Extensions.Options;
 
 namespace MemberShipManage.Server
 {
@@ -147,6 +150,19 @@ namespace MemberShipManage.Server
                     }
                 };
             });
+            services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+            services.AddSingleton<IConsulClient>(p => new ConsulClient(cfg =>
+            {
+                var serviceConfiguration = p.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;
+
+                if (!string.IsNullOrEmpty(serviceConfiguration.Consul.HttpEndpoint))
+                {
+                    // if not configured, the client will use the default value "127.0.0.1:8500"
+                    cfg.Address = new Uri(serviceConfiguration.Consul.HttpEndpoint);
+                }
+            }));
+
+            services.AddConsulConfig(Configuration);
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -184,6 +200,7 @@ namespace MemberShipManage.Server
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Management API");
             });
+            app.UseConsul();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
