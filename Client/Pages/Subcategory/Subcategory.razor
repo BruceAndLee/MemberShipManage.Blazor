@@ -1,7 +1,27 @@
-﻿@inject HttpClient Http
-@inject DialogService DialogService
+﻿@page "/category/list"
+@using MemberShipManage.Server.Models
+@using MemberShipManage.Infrastructurer
+@inject HttpClient Http
 
+
+<Table TItem="Category"
+	   IsPagination="false"
+	   Items="categoryList"
+	   IsStriped="true"
+	   IsBordered="true"
+	   ShowToolbar="true"
+	   ShowDefaultButtons="false">
+	<TableColumns Context="customer">
+		<TableColumn @bind-Field="@customer.Name" Text="类别名称" Width="180" />
+	</TableColumns>
+</Table>
 
 @code {
+	private List<Category> categoryList = new List<Category>();
 
+	protected async override void OnInitialized()
+	{
+		categoryList = await Http.GetFromJsonAsync<List<Category>>(APIUrlDefination.CATEGORY_GET_ALL);
+		StateHasChanged();
+	}
 }

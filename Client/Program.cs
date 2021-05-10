@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using MatBlazor;
 
 namespace MemberShipManage.Client
 {
@@ -19,6 +20,8 @@ namespace MemberShipManage.Client
                 options.ToastDelay = 3000;
             });
             builder.Services.AddBootstrapBlazorTableExcelExport();
+
+            builder.Services.AddMatBlazor();
             await builder.Build().RunAsync();
         }
     }

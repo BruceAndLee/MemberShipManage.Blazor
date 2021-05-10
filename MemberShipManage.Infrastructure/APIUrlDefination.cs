@@ -24,5 +24,11 @@ namespace MemberShipManage.Infrastructurer
         #region token
         public const string TOKEN_GENERATE = "jwttoken/generate";
         #endregion
+
+        #region Category
+
+        public const string CATEGORY_GET_ALL = "category/get/all";
+
+        #endregion
     }
 }

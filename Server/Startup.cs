@@ -27,6 +27,8 @@ using System.Threading.Tasks;
 using Consul;
 using MemberShipManage.Server.ServiceFind;
 using Microsoft.Extensions.Options;
+using MemberShipManage.Repository.CategoryRep;
+using MemberShipManage.Service.CategorySvc;
 
 namespace MemberShipManage.Server
 {
@@ -209,8 +211,10 @@ namespace MemberShipManage.Server
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
             builder.RegisterType<CustomerRepository>().As<ICustomerRepository>().InstancePerLifetimeScope();
             builder.RegisterType<UserRepository>().As<IUserRepository>().InstancePerLifetimeScope();
+            builder.RegisterType<CategoryRepository>().As<ICategoryRepository>().InstancePerLifetimeScope();
             builder.RegisterType<CustomerService>().As<ICustomerService>().InstancePerLifetimeScope();
             builder.RegisterType<UserService>().As<IUserService>().InstancePerLifetimeScope();
+            builder.RegisterType<CategoryService>().As<ICategoryService>().InstancePerLifetimeScope();
             builder.RegisterType<JwtTokenHelper>().InstancePerLifetimeScope();
         }
     }
