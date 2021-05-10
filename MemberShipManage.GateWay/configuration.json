@@ -7,16 +7,16 @@
       "UpstreamPathTemplate": "/mambership/{url}", //网关地址-url变量
       "UpstreamHttpMethod": [ "Get", "Post" ],
       "ServiceName": "CustomerService", //Consul服务名称
-      //"LoadBalancerOptions": {
-      //  "Type": "RoundRobin" //轮询-LeastConnection-最少连接数的服务器-NoLoadBalance不负载均衡
-      //},
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin" //轮询-LeastConnection-最少连接数的服务器-NoLoadBalance不负载均衡
+      },
       "ReRoutesCaseSensitive": false
     }
   ],
   "GlobalConfiguration": {
     "ServiceDiscoveryProvider": {
       "Scheme": "http",
-      "Host": "localhost",
+      "Host": "127.0.0.1",
       "Port": 8500,
       "Type": "Consul" //由Consul提供服务发现
     }

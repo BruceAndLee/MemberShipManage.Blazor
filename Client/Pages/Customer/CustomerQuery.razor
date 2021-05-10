@@ -105,7 +105,8 @@
         </Pagination>
     </div>
 </div>
-@code { private EditContext editContext;
+@code {
+    private EditContext editContext;
     private CustomerGetRequest request = new CustomerGetRequest();
     private CustomerGetResponse CustomerGetResponse = new CustomerGetResponse { CustomerDetailList = new List<CustomerDetailEntity>() };
     private IEnumerable<CustomerDetailEntity> SelectedRows = new List<CustomerDetailEntity>();
@@ -176,8 +177,12 @@
             ShowCloseButton = true,
             BodyTemplate = DynamicComponent.CreateComponent<CustomerEdit>(new KeyValuePair<string, object>[]
                 {
-                    new KeyValuePair<string, object>("CustomerUpdateRequest",customerUpdateRequest)
-                }).Render()
+            new KeyValuePair<string, object>("CustomerUpdateRequest",customerUpdateRequest)
+                }).Render(),
+            OnCloseAsync = async () =>
+          {
+              await SearchCustomerList(new QueryPageOptions { PageIndex = 0, PageItems = PageItemCount });
+          }
         };
         DialogService.Show(option);
         return Task.CompletedTask;
@@ -187,4 +192,5 @@
     {
         this.ShowToast("请选择要删除的数据", "消息通知");
         return Task.CompletedTask;
-    } }
+    }
+}

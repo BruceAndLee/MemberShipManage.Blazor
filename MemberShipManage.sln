@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemberShipManage.Validation
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemberShipManage.Service", "MemberShipManager.Service\MemberShipManage.Service.csproj", "{90255CB4-8280-4D63-9B5C-E6D5FF252DBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemberShipManage.GateWay", "MemberShipManage.GateWay\MemberShipManage.GateWay.csproj", "{5F2589E3-31F9-426A-85E8-42F298658C7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemberShipManage.GateWay", "MemberShipManage.GateWay\MemberShipManage.GateWay.csproj", "{5F2589E3-31F9-426A-85E8-42F298658C7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

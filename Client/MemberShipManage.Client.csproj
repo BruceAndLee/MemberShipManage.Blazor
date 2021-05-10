@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Shared\MemberShipManage.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Dishes\" />
+  </ItemGroup>
+
 </Project>
