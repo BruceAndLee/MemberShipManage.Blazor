@@ -29,6 +29,7 @@ using MemberShipManage.Server.ServiceFind;
 using Microsoft.Extensions.Options;
 using MemberShipManage.Repository.CategoryRep;
 using MemberShipManage.Service.CategorySvc;
+using MudBlazor.Services;
 
 namespace MemberShipManage.Server
 {
@@ -165,6 +166,7 @@ namespace MemberShipManage.Server
             }));
 
             services.AddConsulConfig(Configuration);
+            services.AddMudServices();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

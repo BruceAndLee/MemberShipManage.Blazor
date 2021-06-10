@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor.Services;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using MatBlazor;
 
 namespace MemberShipManage.Client
 {
@@ -20,8 +20,7 @@ namespace MemberShipManage.Client
                 options.ToastDelay = 3000;
             });
             builder.Services.AddBootstrapBlazorTableExcelExport();
-
-            builder.Services.AddMatBlazor();
+            builder.Services.AddMudServices();
             await builder.Build().RunAsync();
         }
     }

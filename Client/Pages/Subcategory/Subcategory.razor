@@ -3,7 +3,7 @@
 @using MemberShipManage.Infrastructurer
 @inject HttpClient Http
 
-
+<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary">刷新</MudButton>
 <Table TItem="Category"
 	   IsPagination="false"
 	   Items="categoryList"
@@ -13,6 +13,7 @@
 	   ShowDefaultButtons="false">
 	<TableColumns Context="customer">
 		<TableColumn @bind-Field="@customer.Name" Text="类别名称" Width="180" />
+		<TableColumn @bind-Field="@customer.InDate" Text="创建时间" Width="180" />
 	</TableColumns>
 </Table>
 

@@ -5,7 +5,7 @@
 
 @inherits MemberShipManage.Client.Pages.Common.ToastPage
 @inject HttpClient Http
-@inject DialogService DialogService
+@inject BootstrapBlazor.Components.DialogService DialogService
 @inject NavigationManager NavigationManager
 
 <div id="customerlist">
@@ -36,8 +36,8 @@
                 </Select>
             </div>
             <div class="col-md-3 text-right">
-                <Button Color="Color.Primary" @onclick="()=> SearchCustomerList(new QueryPageOptions {PageIndex=0,PageItems=PageItemCount })">查询</Button>
-                <Button Color="Color.Secondary" @onclick="()=> SearchCustomerList(new QueryPageOptions {PageIndex=0,PageItems=PageItemCount })">重置</Button>
+                <Button Color="BootstrapBlazor.Components.Color.Primary" @onclick="()=> SearchCustomerList(new QueryPageOptions {PageIndex=0,PageItems=PageItemCount })">查询</Button>
+                <Button Color="BootstrapBlazor.Components.Color.Secondary" @onclick="()=> SearchCustomerList(new QueryPageOptions {PageIndex=0,PageItems=PageItemCount })">重置</Button>
             </div>
         </div>
     </GroupBox>
@@ -59,7 +59,7 @@
                ShowExportButton="true">
             <TableToolbarTemplate>
                 <TableToolbarButton TItem="CustomerDetailEntity"
-                                    Color="Color.Primary"
+                                    Color="BootstrapBlazor.Components.Color.Primary"
                                     Icon="fa fa-fw fa-edit"
                                     Text="新增"
                                     OnClickCallback="@OnAddButtonClick" />
@@ -81,15 +81,15 @@
                 </TableColumn>
             </TableColumns>
             <RowButtonTemplate>
-                <TableCellButton Size="Size.ExtraSmall"
-                                 Color="Color.Success"
+                <TableCellButton Size="BootstrapBlazor.Components.Size.ExtraSmall"
+                                 Color="BootstrapBlazor.Components.Color.Success"
                                  TItem="CustomerDetailEntity"
                                  Item="@context"
                                  Icon="fa fa-edit"
                                  Text="编辑"
                                  OnClickCallback="@OnEditButtonClick" />
-                <TableCellButton Size="Size.ExtraSmall"
-                                 Color="Color.Danger"
+                <TableCellButton Size="BootstrapBlazor.Components.Size.ExtraSmall"
+                                 Color="BootstrapBlazor.Components.Color.Danger"
                                  TItem="CustomerDetailEntity"
                                  Item="@context"
                                  Icon="fa fa-cross"

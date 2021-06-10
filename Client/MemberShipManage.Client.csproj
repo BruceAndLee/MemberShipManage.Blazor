@@ -8,9 +8,9 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="BootstrapBlazor" Version="5.0.14-beta05" />
     <PackageReference Include="BootstrapBlazor.TableExport" Version="5.0.5" />
-    <PackageReference Include="MatBlazor" Version="2.9.0-develop-042" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.1" PrivateAssets="all" />
+    <PackageReference Include="MudBlazor" Version="5.0.11" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
   </ItemGroup>
 
